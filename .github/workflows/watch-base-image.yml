@@ -1,0 +1,67 @@
+# SPDX-FileCopyrightText: Copyright (c) 2026 Red Hat, Inc.
+# SPDX-License-Identifier: Apache-2.0
+#
+# Checks daily whether the UBI base image digests have changed.
+# When they have, auto-commits the updated digest file and triggers
+# a rebuild so container images stay current without waiting for a
+# component submodule bump.
+
+name: Watch UBI base image
+
+on:
+  schedule:
+    - cron: '0 6 * * *'  # Daily 06:00 UTC
+  workflow_dispatch:
+
+env:
+  DIGEST_FILE: .github/ubi-digests.json
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install skopeo
+        run: sudo apt-get install -y skopeo
+
+      - name: Fetch current UBI digests
+        id: fetch
+        run: |
+          fetch_digest() {
+            skopeo inspect --no-creds "docker://registry.access.redhat.com/$1:latest" \
+              | jq -r '.Digest'
+          }
+          cat > /tmp/new-digests.json <<EOF
+          {
+            "ubi10/ubi-micro": "$(fetch_digest ubi10/ubi-micro)",
+            "ubi10/ubi-minimal": "$(fetch_digest ubi10/ubi-minimal)",
+            "ubi10/ubi": "$(fetch_digest ubi10/ubi)"
+          }
+          EOF
+          echo "new_digests=$(cat /tmp/new-digests.json | jq -c .)" >> "$GITHUB_OUTPUT"
+
+      - name: Compare with stored digests
+        id: compare
+        run: |
+          if [ ! -f "$DIGEST_FILE" ]; then
+            echo "changed=true" >> "$GITHUB_OUTPUT"
+          elif diff -q "$DIGEST_FILE" /tmp/new-digests.json > /dev/null 2>&1; then
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "changed=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Commit updated digests
+        if: steps.compare.outputs.changed == 'true'
+        run: |
+          cp /tmp/new-digests.json "$DIGEST_FILE"
+          git config user.name  "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add "$DIGEST_FILE"
+          git commit -s -m "ci: update UBI base image digests $(date -u +%Y-%m-%d)"
+          git push

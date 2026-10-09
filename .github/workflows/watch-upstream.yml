@@ -1,0 +1,139 @@
+# SPDX-FileCopyrightText: Copyright (c) 2026 Red Hat, Inc.
+# SPDX-License-Identifier: Apache-2.0
+#
+# Runs weekly for components in patch state (tracking a fork).
+# Renovate handles normal submodule bumps; this workflow detects when a fix has
+# landed upstream so a maintainer can switch the submodule back and drop the patch.
+#
+# A component is considered "in patch state" when patches/<name>/PATCHES.md
+# exists and is non-empty.
+
+name: Watch upstream for patch resolution
+
+on:
+  schedule:
+    - cron: '0 8 * * 1'  # Monday 08:00 UTC
+  workflow_dispatch:
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        component:
+          - name: nico
+            upstream: dsx-ai-factory/infra-controller
+            path: components/nico
+          - name: rms
+            upstream: dsx-ai-factory/nv-rms
+            path: components/rms
+          - name: nvsentinel
+            upstream: NVIDIA/NVSentinel
+            path: components/nvsentinel
+          - name: fia
+            upstream: dsx-ai-factory/fleet-intelligence-agent
+            path: components/fia
+          - name: gpu-operator
+            upstream: NVIDIA/gpu-operator
+            path: components/gpu-operator
+          - name: network-operator
+            upstream: Mellanox/network-operator
+            path: components/network-operator
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          submodules: true
+
+      - name: Check patch state
+        id: patch
+        run: |
+          f="patches/${{ matrix.component.name }}/PATCHES.md"
+          if [ -f "$f" ] && [ -s "$f" ]; then
+            echo "active=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "active=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Get latest upstream tag
+        if: steps.patch.outputs.active == 'true'
+        id: upstream
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          tag=$(gh api "repos/${{ matrix.component.upstream }}/releases/latest" --jq '.tag_name' 2>/dev/null \
+            || gh api "repos/${{ matrix.component.upstream }}/tags" --jq '.[0].name')
+          echo "tag=$tag" >> "$GITHUB_OUTPUT"
+
+      - name: Get current submodule tag
+        if: steps.patch.outputs.active == 'true'
+        id: current
+        run: |
+          tag=$(git -C "${{ matrix.component.path }}" describe --tags --exact-match 2>/dev/null \
+            || git -C "${{ matrix.component.path }}" rev-parse --short HEAD)
+          echo "tag=$tag" >> "$GITHUB_OUTPUT"
+
+      - name: Open PR if upstream has advanced
+        if: >-
+          steps.patch.outputs.active == 'true' &&
+          steps.upstream.outputs.tag != '' &&
+          steps.upstream.outputs.tag != steps.current.outputs.tag
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          COMPONENT: ${{ matrix.component.name }}
+          UPSTREAM_REPO: ${{ matrix.component.upstream }}
+          UPSTREAM_TAG: ${{ steps.upstream.outputs.tag }}
+          SUBMODULE_PATH: ${{ matrix.component.path }}
+          CURRENT_TAG: ${{ steps.current.outputs.tag }}
+        run: |
+          branch="patch-resolved/${COMPONENT}-${UPSTREAM_TAG}"
+
+          # Skip if a PR for this tag already exists
+          existing=$(gh pr list --head "$branch" --json number --jq '.[0].number' 2>/dev/null || true)
+          if [ -n "$existing" ]; then
+            echo "PR already open for $branch (#$existing), skipping."
+            exit 0
+          fi
+
+          git config user.name  "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git checkout -b "$branch"
+
+          # Point submodule to the upstream tag
+          git -C "$SUBMODULE_PATH" fetch --tags
+          git -C "$SUBMODULE_PATH" checkout "$UPSTREAM_TAG"
+          git add "$SUBMODULE_PATH"
+
+          git commit -s -m "${SUBMODULE_PATH}: switch back to upstream ${UPSTREAM_TAG}
+
+Upstream $UPSTREAM_REPO released $UPSTREAM_TAG while $COMPONENT was in patch
+state (previously at $CURRENT_TAG on a fork).
+
+Verify that patches/\$COMPONENT/ patches are included in this release, then
+merge this PR and remove the patch files in a follow-up commit."
+
+          git push origin "$branch"
+
+          gh pr create \
+            --title "${SUBMODULE_PATH}: switch back to upstream ${UPSTREAM_TAG}" \
+            --body "$(cat <<EOF
+## Patch resolution candidate
+
+Upstream **$UPSTREAM_REPO** released **$UPSTREAM_TAG** while \`$COMPONENT\` was
+in patch state (submodule was at \`$CURRENT_TAG\` on a fork).
+
+### Before merging
+
+- [ ] Confirm that all patches listed in \`patches/$COMPONENT/PATCHES.md\` are
+      included in $UPSTREAM_TAG (check upstream PR merge status).
+- [ ] Remove patch files under \`patches/$COMPONENT/\` in a follow-up commit.
+- [ ] Remove \`components/$COMPONENT\` from the \`matchDepNames\` disabled list
+      in \`renovate.json\` so Renovate resumes tracking this component.
+
+This PR was opened automatically by \`watch-upstream.yml\`.
+EOF
+)" \
+            --label "patch-resolution" \
+            --head "$branch"

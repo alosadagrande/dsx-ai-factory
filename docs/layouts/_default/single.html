@@ -1,0 +1,25 @@
+{{ define "main" }}
+<div class="doc-layout">
+    <aside class="toc-sidebar">
+        <nav class="toc" aria-label="Table of contents">
+            <p class="toc-title">On this page</p>
+            {{ .TableOfContents }}
+        </nav>
+    </aside>
+    <article>
+        <header>
+            <h1>{{ .Title }}</h1>
+            {{ if .Params.tags }}
+            <div class="tags">
+                {{ range .Params.tags }}
+                <span class="tag">{{ . }}</span>
+                {{ end }}
+            </div>
+            {{ end }}
+        </header>
+        <div class="content">
+            {{ .Content }}
+        </div>
+    </article>
+</div>
+{{ end }}

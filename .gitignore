@@ -1,0 +1,23 @@
+# Hugo build output
+docs/public/
+docs/resources/
+docs/.hugo_build.lock
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Editor
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Helm
+charts/*/charts/
+charts/*/*.tgz
+
+# Secrets / local overrides
+.env
+*.local

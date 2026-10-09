@@ -1,0 +1,22 @@
+# Patches for <component>
+
+This file signals that `components/<component>` is in **patch state** — the
+submodule points to a fork rather than an official upstream tag.
+`watch-upstream.yml` monitors upstream releases and opens a PR when it detects
+a tag that may include the fixes below.
+
+## Active patches
+
+### 0001-description.patch
+- **Upstream issue**: <URL>
+- **Upstream PR**: <URL>
+- **Fork branch**: <org/repo@branch>
+- **Description**: <one-line summary of the fix>
+
+## Resolving a patch
+
+When upstream releases a tag that includes all patches above:
+1. Merge the PR opened by `watch-upstream.yml`.
+2. Delete patch files from this directory.
+3. Remove `components/<component>` from `matchDepNames` in `renovate.json`.
+4. Delete this file (or leave it empty to return to normal Renovate tracking).

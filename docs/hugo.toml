@@ -1,0 +1,20 @@
+baseURL = 'https://rh-ecosystem-edge.github.io/dsx-ai-factory/'
+languageCode = 'en-us'
+title = 'Red Hat build of DSX AI Factory'
+
+[params]
+  description = 'Midstream artifacts for Red Hat to build and ship the NVIDIA DSX AI Factory components'
+  author = 'Red Hat'
+
+[markup]
+  [markup.highlight]
+    style = 'monokai'
+    lineNos = true
+  [markup.goldmark.renderer]
+    unsafe = true
+  [markup.tableOfContents]
+    startLevel = 2
+    endLevel = 3
+    ordered = false
+
+ignoreLogs = ['warning-goldmark-raw-html']
