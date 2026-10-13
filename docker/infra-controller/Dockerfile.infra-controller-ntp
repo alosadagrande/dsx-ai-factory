@@ -1,0 +1,37 @@
+# SPDX-FileCopyrightText: Copyright (c) 2026 Red Hat, Inc.
+# SPDX-License-Identifier: Apache-2.0
+#
+# NICo NTP service — chrony on UBI 10.
+# Reads NTP_SERVERS (comma-separated) and NTP_DIRECTIVES env vars and
+# generates /etc/chrony.conf at container start.
+# Build context: docker/infra-controller/ (this directory)
+
+FROM registry.access.redhat.com/ubi10/ubi-minimal:latest
+
+RUN --mount=type=secret,id=rhsm_org \
+    --mount=type=secret,id=rhsm_activationkey \
+    microdnf install -y subscription-manager && \
+    rm -f /etc/rhsm-host && \
+    trap 'subscription-manager unregister || true' EXIT && \
+    subscription-manager register \
+      --org="$(cat /run/secrets/rhsm_org)" \
+      --activationkey="$(cat /run/secrets/rhsm_activationkey)" && \
+    microdnf install -y chrony && \
+    microdnf clean all && \
+    mkdir -p /run/chrony /var/lib/chrony && \
+    chown chrony:chrony /run/chrony /var/lib/chrony
+
+COPY entrypoint-ntp.sh /entrypoint.sh
+RUN chmod +x /entrypoint.sh
+
+LABEL name="infra-controller-ntp" \
+      summary="NICo NTP service — chrony on UBI 10" \
+      description="Configures chronyd from NTP_SERVERS and NTP_DIRECTIVES environment variables." \
+      io.k8s.display-name="Infra Controller NTP" \
+      com.redhat.component="infra-controller-ntp"
+
+EXPOSE 123/udp
+
+USER chrony
+
+ENTRYPOINT ["/entrypoint.sh"]

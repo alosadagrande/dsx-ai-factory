@@ -126,6 +126,10 @@ jobs:
             dockerfile: docker/infra-controller/Dockerfile.unbound
             context: docker/infra-controller/
             rhsm: true
+          - name: infra-controller-ntp
+            dockerfile: docker/infra-controller/Dockerfile.infra-controller-ntp
+            context: docker/infra-controller/
+            rhsm: true
 
     steps:
       - name: Checkout

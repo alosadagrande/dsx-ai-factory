@@ -26,6 +26,11 @@ nico:
       repository: ghcr.io/rh-ecosystem-edge/dsx-ai-factory/unbound
       tag: latest   # replaced by release.yml: unbound:.*
 
+  nico-ntp:
+    image:
+      repository: ghcr.io/rh-ecosystem-edge/dsx-ai-factory/infra-controller-ntp
+      tag: latest   # replaced by release.yml: infra-controller-ntp:.*
+
 # ---------------------------------------------------------------------------
 # NICo REST services
 # ---------------------------------------------------------------------------
