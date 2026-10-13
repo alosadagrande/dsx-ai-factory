@@ -59,7 +59,7 @@ for detailed guidance.
 ### DSX AI Factory nodes
 
 NVIDIA DSX AI Factory hardware. Refer to the
-[NVIDIA Infra Controller documentation](https://docs.nvidia.com/infra-controller)
+[NVIDIA Infra Controller hardware prerequisites](https://docs.nvidia.com/infra-controller/documentation/getting-started/prerequisites/hardware)
 for the validated hardware bill of materials.
 
 ### Network

@@ -124,6 +124,12 @@ or proxied through `nico-pxe`'s artifact cache. Set the caching strategy
 to `CacheAsNeeded` to have `nico-pxe` download and cache the image locally
 on first use.
 
+## Further reading
+
+- [NICo — Ingesting hosts](https://docs.nvidia.com/infra-controller/documentation/provisioning-day-0/ingesting-hosts) — full reference for machine registration options
+- [NICo — IP and network configuration](https://docs.nvidia.com/infra-controller/documentation/provisioning-day-0/ip-and-network-configuration)
+- [NICo — Discovery OS / Scout](https://docs.nvidia.com/infra-controller/documentation/provisioning-day-0/discovery-os-cloud-init-scout)
+
 ## Next steps
 
 With RHEL running on the AI Factory compute nodes, proceed to

@@ -11,7 +11,7 @@ components.
 | NVIDIA Infra Controller (NICo) | [dsx-ai-factory/infra-controller](https://github.com/dsx-ai-factory/infra-controller) | [docs.nvidia.com/infra-controller](https://docs.nvidia.com/infra-controller) |
 | NVIDIA Rack Management Service (RMS) | [dsx-ai-factory/nv-rms](https://github.com/dsx-ai-factory/nv-rms) | [docs.nvidia.com/rms](https://docs.nvidia.com/rms) |
 | NVSentinel | [NVIDIA/NVSentinel](https://github.com/NVIDIA/NVSentinel) | [docs.nvidia.com/nvsentinel](https://docs.nvidia.com/nvsentinel) |
-| NVIDIA Fleet Intelligence Agent | [dsx-ai-factory/fleet-intelligence-agent](https://github.com/dsx-ai-factory/fleet-intelligence-agent) | [docs.nvidia.com/fleet-intelligence](https://docs.nvidia.com/fleet-intelligence) |
+| NVIDIA Fleet Intelligence Agent | [dsx-ai-factory/fleet-intelligence-agent](https://github.com/dsx-ai-factory/fleet-intelligence-agent) | [docs.nvidia.com/fleet-intel](https://docs.nvidia.com/fleet-intel) |
 | NVIDIA GPU Operator | [NVIDIA/gpu-operator](https://github.com/NVIDIA/gpu-operator) | [docs.nvidia.com/.../openshift](https://docs.nvidia.com/datacenter/cloud-native/openshift/latest/index.html) |
 | NVIDIA Network Operator | [Mellanox/network-operator](https://github.com/Mellanox/network-operator) | [docs.nvidia.com/networking](https://docs.nvidia.com/networking/display/kubernetes2641/index.html) |
 

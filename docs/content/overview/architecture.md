@@ -91,6 +91,13 @@ deploying NICo and RMS:
 
 See the [Deployment](../deployment/) section for step-by-step instructions.
 
+## Further reading
+
+- [NICo overview and components](https://docs.nvidia.com/infra-controller/documentation/architecture/overview-and-components)
+- [NICo Day 0/1/2 lifecycle](https://docs.nvidia.com/infra-controller/documentation/overview/day-0-day-1-day-2-lifecycle)
+- [NICo managed host state machine](https://docs.nvidia.com/infra-controller/documentation/architecture/state-machines/managed-host)
+- [RMS architecture](https://docs.nvidia.com/rms/documentation/architecture/external-view)
+
 ## NICo service reference
 
 NICo is composed of several services that each own a specific part of the

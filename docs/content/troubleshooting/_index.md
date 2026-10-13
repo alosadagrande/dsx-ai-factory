@@ -269,3 +269,9 @@ oc get svc -n nico-system
 # cert-manager certificate status
 oc get certificate -n nico-system
 ```
+
+## Further reading
+
+- [NICo stuck objects runbook](https://docs.nvidia.com/infra-controller/documentation/operations-day-2/playbooks/stuck-objects/overview-and-general-troubleshooting)
+- [NICo — Adding new machines to an existing site](https://docs.nvidia.com/infra-controller/documentation/operations-day-2/playbooks/stuck-objects/adding-new-machines-to-an-existing-site)
+- [NICo quick start guide](https://docs.nvidia.com/infra-controller/documentation/getting-started/quick-start-guide)

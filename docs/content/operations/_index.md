@@ -161,4 +161,4 @@ curl -k https://localhost:8388/api/v1/health
 The Rack Management Service (RMS) manages switch firmware, PDU power control,
 and rack-level hardware inventory. For switch firmware updates, reprovisioning,
 and other RMS-specific tasks, refer to the
-[RMS documentation](https://docs.nvidia.com/rms).
+[RMS operations documentation](https://docs.nvidia.com/rms/documentation/operations/overview).
