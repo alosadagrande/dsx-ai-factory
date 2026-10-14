@@ -1,0 +1,159 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 980 650" width="100%" height="100%" style="background:#ffffff; font-family:'Red Hat Text', 'Red Hat Display', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;">
+  <defs>
+    <!-- Drop Shadow Filters -->
+    <filter id="card-shadow" x="-3%" y="-4%" width="106%" height="114%" filterUnits="userSpaceOnUse">
+      <feDropShadow dx="0" dy="2" stdDeviation="4" flood-color="#000000" flood-opacity="0.08"/>
+    </filter>
+    <filter id="pill-shadow" x="-4%" y="-8%" width="108%" height="120%" filterUnits="userSpaceOnUse">
+      <feDropShadow dx="0" dy="1" stdDeviation="2" flood-color="#000000" flood-opacity="0.10"/>
+    </filter>
+
+    <!-- Directional Arrowhead Markers -->
+    <marker id="arrow-red" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto">
+      <path d="M 0 0 L 8 4 L 0 8 Z" fill="#EE0000" />
+    </marker>
+    <marker id="arrow-blue" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto">
+      <path d="M 0 0 L 8 4 L 0 8 Z" fill="#0066CC" />
+    </marker>
+  </defs>
+
+  <!-- Title / Legend Ribbon -->
+  <g id="rh-header">
+    <rect x="30" y="20" width="920" height="42" rx="4" fill="#151515"/>
+    <rect x="30" y="20" width="6" height="42" rx="2" fill="#EE0000"/>
+    <text x="50" y="46" fill="#FFFFFF" font-size="14" font-weight="700" letter-spacing="0.6">SWITCH PORT TRANSFORMATION — BEFORE VS AFTER TENANT ASSIGNMENT</text>
+    <text x="930" y="46" fill="#D2D2D2" font-size="12" font-weight="400" text-anchor="end">day-0 / day-2</text>
+  </g>
+
+  <!-- Divider Line -->
+  <line x1="490" y1="80" x2="490" y2="615" stroke="#D2D2D2" stroke-width="1.5" stroke-dasharray="4,4" />
+
+  <!-- COLUMN 1: BEFORE Tenant Assignment -->
+  <g id="before-assignment" transform="translate(30, 80)">
+    <!-- Section Label -->
+    <text x="20" y="25" fill="#151515" font-size="14" font-weight="700" letter-spacing="0.5">BEFORE tenant assignment</text>
+    <text x="20" y="45" fill="#4F5255" font-size="11.5" font-weight="500">discovery and provisioning state</text>
+
+    <!-- ToR Switch Port Card -->
+    <g transform="translate(20, 65)" filter="url(#card-shadow)">
+      <rect width="395" height="120" rx="6" fill="#FFFFFF" stroke="#D2D2D2" stroke-width="1.2"/>
+      <rect x="0" y="0" width="395" height="36" rx="6" fill="#F0F4F8"/>
+      <rect x="0" y="34" width="395" height="2" fill="#4F5255"/>
+      <text x="16" y="23" fill="#151515" font-size="13.5" font-weight="700">ToR switch port</text>
+      <rect x="135" y="6" width="100" height="24" rx="4" fill="#FFFFFF" stroke="#D2D2D2" stroke-width="1"/>
+      <text x="185" y="22" fill="#151515" font-family="'Red Hat Mono', monospace" font-size="12" font-weight="700" text-anchor="middle">swp&lt;node&gt;</text>
+
+      <!-- Port Properties -->
+      <g transform="translate(18, 52)">
+        <text x="0" y="16" fill="#4F5255" font-size="12.5" font-weight="600">mode:</text>
+        <text x="50" y="16" fill="#151515" font-size="12.5" font-weight="700">access</text>
+
+        <text x="0" y="46" fill="#4F5255" font-size="12.5" font-weight="600">VLAN:</text>
+        <rect x="52" y="30" width="45" height="22" rx="3" fill="#FDF2F2" stroke="#F8B4B4" stroke-width="1"/>
+        <text x="74.5" y="45" fill="#EE0000" font-family="'Red Hat Mono', monospace" font-size="12" font-weight="700" text-anchor="middle">210</text>
+        <text x="105" y="46" fill="#C51B24" font-size="12.5" font-weight="600">(provisioning)</text>
+      </g>
+    </g>
+
+    <!-- Link Path: Access VLAN 210 -->
+    <g id="link-before">
+      <line x1="217" y1="185" x2="217" y2="340" stroke="#EE0000" stroke-width="2.5" marker-end="url(#arrow-red)"/>
+      <g transform="translate(112, 248)" filter="url(#pill-shadow)">
+        <rect width="210" height="28" rx="14" fill="#FFFFFF" stroke="#EE0000" stroke-width="1.5"/>
+        <text x="105" y="18" fill="#EE0000" font-size="11.5" font-weight="700" text-anchor="middle">access VLAN 210</text>
+      </g>
+    </g>
+
+    <!-- AI Factory Node Card -->
+    <g transform="translate(20, 340)" filter="url(#card-shadow)">
+      <rect width="395" height="135" rx="6" fill="#FFFFFF" stroke="#D2D2D2" stroke-width="1.2"/>
+      <rect x="0" y="0" width="5" height="135" rx="2.5" fill="#EE0000"/>
+      <text x="20" y="30" fill="#151515" font-size="14.5" font-weight="700">AI Factory Node</text>
+
+      <!-- NIC detail -->
+      <g transform="translate(20, 48)">
+        <text x="0" y="16" fill="#4F5255" font-size="12.5" font-weight="600">NIC:</text>
+        <rect x="40" y="0" width="165" height="24" rx="4" fill="#FDF2F2" stroke="#F8B4B4" stroke-width="1"/>
+        <text x="122.5" y="16" fill="#EE0000" font-size="11.5" font-weight="700" text-anchor="middle">provisioning VLAN 210</text>
+      </g>
+
+      <!-- Role detail -->
+      <g transform="translate(20, 88)">
+        <text x="0" y="16" fill="#4F5255" font-size="12.5" font-weight="600">role:</text>
+        <rect x="40" y="0" width="165" height="24" rx="4" fill="#F0F4F8" stroke="#D2D2D2" stroke-width="1"/>
+        <text x="122.5" y="16.5" fill="#151515" font-size="11.5" font-weight="600" text-anchor="middle">discovery / OS</text>
+      </g>
+    </g>
+  </g>
+
+  <!-- COLUMN 2: AFTER Tenant Assignment -->
+  <g id="after-assignment" transform="translate(505, 80)">
+    <!-- Section Label -->
+    <text x="20" y="25" fill="#151515" font-size="14" font-weight="700" letter-spacing="0.5">AFTER tenant assignment</text>
+    <text x="20" y="45" fill="#EE0000" font-size="11.5" font-weight="700">active day-2 traffic state</text>
+
+    <!-- ToR Switch Port Card -->
+    <g transform="translate(20, 65)" filter="url(#card-shadow)">
+      <rect width="395" height="120" rx="6" fill="#FFFFFF" stroke="#D2D2D2" stroke-width="1.2"/>
+      <rect x="0" y="0" width="395" height="36" rx="6" fill="#F0F4F8"/>
+      <rect x="0" y="34" width="395" height="2" fill="#0066CC"/>
+      <text x="16" y="23" fill="#151515" font-size="13.5" font-weight="700">ToR switch port</text>
+      <rect x="135" y="6" width="100" height="24" rx="4" fill="#FFFFFF" stroke="#D2D2D2" stroke-width="1"/>
+      <text x="185" y="22" fill="#151515" font-family="'Red Hat Mono', monospace" font-size="12" font-weight="700" text-anchor="middle">swp&lt;node&gt;</text>
+
+      <!-- Port Properties -->
+      <g transform="translate(18, 52)">
+        <text x="0" y="16" fill="#4F5255" font-size="12.5" font-weight="600">mode:</text>
+        <text x="50" y="16" fill="#151515" font-size="12.5" font-weight="700">access</text>
+
+        <text x="0" y="46" fill="#4F5255" font-size="12.5" font-weight="600">VLAN:</text>
+        <rect x="52" y="30" width="125" height="22" rx="3" fill="#EDF5FB" stroke="#B8D7F2" stroke-width="1"/>
+        <text x="114.5" y="45" fill="#0066CC" font-family="'Red Hat Mono', monospace" font-size="12" font-weight="700" text-anchor="middle">&lt;tenant-vni&gt; ▲</text>
+      </g>
+    </g>
+
+    <!-- Mid-Link Overlay Box (Automatic Configuration) -->
+    <g id="automated-interconnect">
+      <!-- Path back to interface -->
+      <line x1="217" y1="185" x2="217" y2="340" stroke="#0066CC" stroke-width="2.5" marker-end="url(#arrow-blue)"/>
+      
+      <!-- Labeled Path Badging -->
+      <g transform="translate(107, 290)" filter="url(#pill-shadow)">
+        <rect width="220" height="28" rx="14" fill="#FFFFFF" stroke="#0066CC" stroke-width="1.5"/>
+        <text x="110" y="18" fill="#0066CC" font-size="11.5" font-weight="700" text-anchor="middle">access VLAN &lt;tenant-vni&gt;</text>
+      </g>
+
+      <!-- Configuration Card Layer -->
+      <g transform="translate(45, 195)" filter="url(#card-shadow)">
+        <rect width="345" height="85" rx="6" fill="#FFFFFF" stroke="#F8B4B4" stroke-width="1"/>
+        <rect x="0" y="0" width="5" height="85" rx="2.5" fill="#EE0000"/>
+        <text x="16" y="20" fill="#EE0000" font-size="12" font-weight="700">AUTOMATION IN PROGRESS</text>
+        <text x="16" y="38" fill="#151515" font-size="11.5" font-weight="600">NICo programs this via NVUE REST API</text>
+        <text x="16" y="54" fill="#4F5255" font-size="11" font-weight="500">(spectrum-fabric provider)</text>
+        <text x="16" y="70" fill="#4F5255" font-size="11" font-weight="500">at instance allocation time</text>
+      </g>
+    </g>
+
+    <!-- AI Factory Node Card -->
+    <g transform="translate(20, 340)" filter="url(#card-shadow)">
+      <rect width="395" height="135" rx="6" fill="#FFFFFF" stroke="#D2D2D2" stroke-width="1.2"/>
+      <rect x="0" y="0" width="5" height="135" rx="2.5" fill="#0066CC"/>
+      <text x="20" y="30" fill="#151515" font-size="14.5" font-weight="700">AI Factory Node</text>
+
+      <!-- NIC detail -->
+      <g transform="translate(20, 48)">
+        <text x="0" y="16" fill="#4F5255" font-size="12.5" font-weight="600">NIC:</text>
+        <rect x="40" y="0" width="185" height="24" rx="4" fill="#EDF5FB" stroke="#B8D7F2" stroke-width="1"/>
+        <text x="132.5" y="16" fill="#0066CC" font-size="11.5" font-weight="700" text-anchor="middle">tenant VNI (N/S)</text>
+      </g>
+
+      <!-- Role detail -->
+      <g transform="translate(20, 88)">
+        <text x="0" y="16" fill="#4F5255" font-size="12.5" font-weight="600">role:</text>
+        <rect x="40" y="0" width="135" height="24" rx="4" fill="#F0F4F8" stroke="#D2D2D2" stroke-width="1"/>
+        <text x="107.5" y="16.5" fill="#151515" font-size="11.5" font-weight="600" text-anchor="middle">workload traffic</text>
+      </g>
+    </g>
+  </g>
+</svg>
+

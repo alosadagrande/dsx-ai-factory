@@ -1,0 +1,195 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 980 1020" width="100%" height="100%" style="background:#ffffff; font-family:'Red Hat Text', 'Red Hat Display', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;">
+  <defs>
+    <!-- Drop Shadow Filters -->
+    <filter id="card-shadow" x="-3%" y="-4%" width="106%" height="114%" filterUnits="userSpaceOnUse">
+      <feDropShadow dx="0" dy="2" stdDeviation="4" flood-color="#000000" flood-opacity="0.08"/>
+    </filter>
+    <filter id="pill-shadow" x="-4%" y="-8%" width="108%" height="120%" filterUnits="userSpaceOnUse">
+      <feDropShadow dx="0" dy="1" stdDeviation="2" flood-color="#000000" flood-opacity="0.10"/>
+    </filter>
+
+    <!-- Directional Arrowhead Markers -->
+    <marker id="arrow-red" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto">
+      <path d="M 0 0 L 8 4 L 0 8 Z" fill="#EE0000" />
+    </marker>
+    <marker id="arrow-charcoal" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto">
+      <path d="M 0 0 L 8 4 L 0 8 Z" fill="#212427" />
+    </marker>
+  </defs>
+
+  <!-- Top Reference Header Ribbon -->
+  <g id="rh-header">
+    <rect x="30" y="20" width="920" height="42" rx="4" fill="#151515"/>
+    <rect x="30" y="20" width="6" height="42" rx="2" fill="#EE0000"/>
+    <text x="50" y="46" fill="#FFFFFF" font-size="14" font-weight="700" letter-spacing="0.6">SEQUENCE DIAGRAM | AI FACTORY NODE PROVISIONING WORKFLOW</text>
+    <text x="930" y="46" fill="#D2D2D2" font-size="12" font-weight="400" text-anchor="end">Bare-Metal Automation</text>
+  </g>
+
+  <!-- Lifelines (Vertical dashed guides) -->
+  <g stroke="#D2D2D2" stroke-width="2" stroke-dasharray="6,6">
+    <line x1="140" y1="130" x2="140" y2="905" />
+    <line x1="380" y1="130" x2="380" y2="905" />
+    <line x1="620" y1="130" x2="620" y2="905" />
+    <line x1="850" y1="130" x2="850" y2="905" />
+  </g>
+
+  <!-- TOP PARTICIPANT HEADERS -->
+  <!-- Participant 1: AI Factory Node -->
+  <g transform="translate(45, 80)" filter="url(#card-shadow)">
+    <rect width="190" height="48" rx="6" fill="#FFFFFF" stroke="#D2D2D2" stroke-width="1.2"/>
+    <rect x="0" y="0" width="190" height="4" rx="2" fill="#151515"/>
+    <text x="95" y="30" fill="#151515" font-size="14" font-weight="700" text-anchor="middle">AI Factory Node</text>
+  </g>
+
+  <!-- Participant 2: nico-dhcp -->
+  <g transform="translate(295, 80)" filter="url(#card-shadow)">
+    <rect width="170" height="48" rx="6" fill="#FFFFFF" stroke="#D2D2D2" stroke-width="1.2"/>
+    <rect x="0" y="0" width="170" height="4" rx="2" fill="#EE0000"/>
+    <text x="85" y="30" fill="#151515" font-family="'Red Hat Mono', monospace" font-size="13" font-weight="700" text-anchor="middle">nico-dhcp</text>
+  </g>
+
+  <!-- Participant 3: nico-pxe -->
+  <g transform="translate(535, 80)" filter="url(#card-shadow)">
+    <rect width="170" height="48" rx="6" fill="#FFFFFF" stroke="#D2D2D2" stroke-width="1.2"/>
+    <rect x="0" y="0" width="170" height="4" rx="2" fill="#EE0000"/>
+    <text x="85" y="30" fill="#151515" font-family="'Red Hat Mono', monospace" font-size="13" font-weight="700" text-anchor="middle">nico-pxe</text>
+  </g>
+
+  <!-- Participant 4: nico-api (Core) -->
+  <g transform="translate(755, 80)" filter="url(#card-shadow)">
+    <rect width="190" height="48" rx="6" fill="#FFFFFF" stroke="#D2D2D2" stroke-width="1.2"/>
+    <rect x="0" y="0" width="190" height="4" rx="2" fill="#EE0000"/>
+    <text x="95" y="30" fill="#151515" font-family="'Red Hat Mono', monospace" font-size="13" font-weight="700" text-anchor="middle">nico-api <tspan font-family="'Red Hat Text', sans-serif" font-weight="500">(Core)</tspan></text>
+  </g>
+
+  <!-- SEQUENCE INTERACTIONS -->
+
+  <!-- 1. DHCP DISCOVER -->
+  <g id="step-1">
+    <line x1="140" y1="168" x2="372" y2="168" stroke="#EE0000" stroke-width="2" marker-end="url(#arrow-red)"/>
+    <rect x="180" y="145" width="160" height="18" rx="3" fill="#FFFFFF" opacity="0.95"/>
+    <text x="260" y="159" fill="#151515" font-size="12" font-weight="700" text-anchor="middle">DHCP DISCOVER</text>
+  </g>
+
+  <!-- 2. DHCP OFFER (VIP) -->
+  <g id="step-2">
+    <line x1="380" y1="212" x2="148" y2="212" stroke="#212427" stroke-width="2" stroke-dasharray="6,4" marker-end="url(#arrow-charcoal)"/>
+    <rect x="175" y="189" width="170" height="18" rx="3" fill="#FFFFFF" opacity="0.95"/>
+    <text x="260" y="203" fill="#212427" font-size="12" font-weight="700" text-anchor="middle">DHCP OFFER (VIP)</text>
+  </g>
+
+  <!-- 3. GET ipxe.efi -->
+  <g id="step-3">
+    <line x1="140" y1="265" x2="612" y2="265" stroke="#EE0000" stroke-width="2" marker-end="url(#arrow-red)"/>
+    <rect x="300" y="242" width="160" height="18" rx="3" fill="#FFFFFF" opacity="0.95"/>
+    <text x="380" y="256" fill="#151515" font-family="'Red Hat Mono', monospace" font-size="12" font-weight="700" text-anchor="middle">GET ipxe.efi</text>
+  </g>
+
+  <!-- 4. ipxe.efi (Response) -->
+  <g id="step-4">
+    <line x1="620" y1="308" x2="148" y2="308" stroke="#212427" stroke-width="2" stroke-dasharray="6,4" marker-end="url(#arrow-charcoal)"/>
+    <rect x="315" y="285" width="130" height="18" rx="3" fill="#FFFFFF" opacity="0.95"/>
+    <text x="380" y="299" fill="#212427" font-family="'Red Hat Mono', monospace" font-size="12" font-weight="700" text-anchor="middle">ipxe.efi</text>
+  </g>
+
+  <!-- 5. GET scout.efi + scout.squashfs -->
+  <g id="step-5">
+    <line x1="140" y1="360" x2="612" y2="360" stroke="#EE0000" stroke-width="2" marker-end="url(#arrow-red)"/>
+    <rect x="250" y="337" width="260" height="18" rx="3" fill="#FFFFFF" opacity="0.95"/>
+    <text x="380" y="351" fill="#151515" font-family="'Red Hat Mono', monospace" font-size="12" font-weight="700" text-anchor="middle">GET scout.efi + scout.squashfs</text>
+  </g>
+
+  <!-- 6. boot blobs (Response) -->
+  <g id="step-6">
+    <line x1="620" y1="404" x2="148" y2="404" stroke="#212427" stroke-width="2" stroke-dasharray="6,4" marker-end="url(#arrow-charcoal)"/>
+    <rect x="310" y="381" width="140" height="18" rx="3" fill="#FFFFFF" opacity="0.95"/>
+    <text x="380" y="395" fill="#212427" font-size="12" font-weight="700" text-anchor="middle">boot blobs</text>
+  </g>
+
+  <!-- STATE BOX 1: Scout OS boots, forge-scout runs hardware inventory -->
+  <g id="note-1" transform="translate(190, 444)" filter="url(#card-shadow)">
+    <line x1="-140" y1="20" x2="710" y2="20" stroke="#D2D2D2" stroke-width="1.5"/>
+    <rect width="600" height="40" rx="6" fill="#F0F4F8" stroke="#D2D2D2" stroke-width="1.2"/>
+    <rect x="0" y="0" width="5" height="40" rx="2" fill="#0066CC"/>
+    <text x="300" y="25" fill="#151515" font-size="12.5" font-weight="600" text-anchor="middle">
+      Scout OS boots, <tspan font-family="'Red Hat Mono', monospace" font-weight="700" fill="#0066CC">forge-scout</tspan> runs hardware inventory
+    </text>
+  </g>
+
+  <!-- 7. hardware inventory (gRPC mTLS) -->
+  <g id="step-7">
+    <line x1="140" y1="532" x2="842" y2="532" stroke="#EE0000" stroke-width="2" marker-end="url(#arrow-red)"/>
+    <rect x="365" y="509" width="260" height="18" rx="3" fill="#FFFFFF" opacity="0.95"/>
+    <text x="495" y="523" fill="#151515" font-size="12" font-weight="700" text-anchor="middle">hardware inventory <tspan fill="#4F5255" font-weight="500">(gRPC mTLS)</tspan></text>
+  </g>
+
+  <!-- 8. validate vs SKU (Self Loop) -->
+  <g id="step-8">
+    <path d="M 850 564 L 895 564 L 895 604 L 858 604" fill="none" stroke="#EE0000" stroke-width="2" marker-end="url(#arrow-red)"/>
+    <rect x="860" y="574" width="115" height="20" rx="3" fill="#FDF2F2" stroke="#F8B4B4" stroke-width="1"/>
+    <text x="917.5" y="588" fill="#EE0000" font-size="11" font-weight="700" text-anchor="middle">validate vs SKU</text>
+  </g>
+
+  <!-- 9. boot qcow-imager -->
+  <g id="step-9">
+    <line x1="850" y1="645" x2="148" y2="645" stroke="#212427" stroke-width="2" stroke-dasharray="6,4" marker-end="url(#arrow-charcoal)"/>
+    <rect x="420" y="622" width="160" height="18" rx="3" fill="#FFFFFF" opacity="0.95"/>
+    <text x="500" y="636" fill="#212427" font-size="12" font-weight="700" text-anchor="middle">boot qcow-imager</text>
+  </g>
+
+  <!-- 10. GET qcow-imager.efi -->
+  <g id="step-10">
+    <line x1="140" y1="698" x2="612" y2="698" stroke="#EE0000" stroke-width="2" marker-end="url(#arrow-red)"/>
+    <rect x="290" y="675" width="180" height="18" rx="3" fill="#FFFFFF" opacity="0.95"/>
+    <text x="380" y="689" fill="#151515" font-family="'Red Hat Mono', monospace" font-size="12" font-weight="700" text-anchor="middle">GET qcow-imager.efi</text>
+  </g>
+
+  <!-- STATE BOX 2: qcow-imager writes RHEL to disk -->
+  <g id="note-2" transform="translate(190, 740)" filter="url(#card-shadow)">
+    <line x1="-140" y1="20" x2="710" y2="20" stroke="#D2D2D2" stroke-width="1.5"/>
+    <rect width="600" height="40" rx="6" fill="#FDF2F2" stroke="#F8B4B4" stroke-width="1.2"/>
+    <rect x="0" y="0" width="5" height="40" rx="2" fill="#EE0000"/>
+    <text x="300" y="25" fill="#151515" font-size="12.5" font-weight="600" text-anchor="middle">
+      <tspan font-family="'Red Hat Mono', monospace" font-weight="700" fill="#EE0000">qcow-imager</tspan> writes <tspan font-weight="700" fill="#EE0000">RHEL</tspan> to disk
+    </text>
+  </g>
+
+  <!-- 11. node Ready -->
+  <g id="step-11">
+    <line x1="140" y1="832" x2="842" y2="832" stroke="#EE0000" stroke-width="2.5" marker-end="url(#arrow-red)"/>
+    <g transform="translate(430, 816)" filter="url(#pill-shadow)">
+      <rect width="130" height="26" rx="13" fill="#EE0000"/>
+      <text x="65" y="17.5" fill="#FFFFFF" font-size="12" font-weight="700" text-anchor="middle">node Ready</text>
+    </g>
+  </g>
+
+  <!-- BOTTOM PARTICIPANT FOOTERS -->
+  <!-- Bottom P1: AI Factory Node -->
+  <g transform="translate(45, 905)" filter="url(#card-shadow)">
+    <rect width="190" height="48" rx="6" fill="#FFFFFF" stroke="#D2D2D2" stroke-width="1.2"/>
+    <rect x="0" y="44" width="190" height="4" rx="2" fill="#151515"/>
+    <text x="95" y="30" fill="#151515" font-size="14" font-weight="700" text-anchor="middle">AI Factory Node</text>
+  </g>
+
+  <!-- Bottom P2: nico-dhcp -->
+  <g transform="translate(295, 905)" filter="url(#card-shadow)">
+    <rect width="170" height="48" rx="6" fill="#FFFFFF" stroke="#D2D2D2" stroke-width="1.2"/>
+    <rect x="0" y="44" width="170" height="4" rx="2" fill="#EE0000"/>
+    <text x="85" y="30" fill="#151515" font-family="'Red Hat Mono', monospace" font-size="13" font-weight="700" text-anchor="middle">nico-dhcp</text>
+  </g>
+
+  <!-- Bottom P3: nico-pxe -->
+  <g transform="translate(535, 905)" filter="url(#card-shadow)">
+    <rect width="170" height="48" rx="6" fill="#FFFFFF" stroke="#D2D2D2" stroke-width="1.2"/>
+    <rect x="0" y="44" width="170" height="4" rx="2" fill="#EE0000"/>
+    <text x="85" y="30" fill="#151515" font-family="'Red Hat Mono', monospace" font-size="13" font-weight="700" text-anchor="middle">nico-pxe</text>
+  </g>
+
+  <!-- Bottom P4: nico-api (Core) -->
+  <g transform="translate(755, 905)" filter="url(#card-shadow)">
+    <rect width="190" height="48" rx="6" fill="#FFFFFF" stroke="#D2D2D2" stroke-width="1.2"/>
+    <rect x="0" y="44" width="190" height="4" rx="2" fill="#EE0000"/>
+    <text x="95" y="30" fill="#151515" font-family="'Red Hat Mono', monospace" font-size="13" font-weight="700" text-anchor="middle">nico-api <tspan font-family="'Red Hat Text', sans-serif" font-weight="500">(Core)</tspan></text>
+  </g>
+</svg>
+

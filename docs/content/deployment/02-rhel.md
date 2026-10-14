@@ -11,6 +11,8 @@ hardware validation to a running RHEL installation without manual intervention.
 
 The provisioning sequence proceeds in four phases:
 
+![Provisiong - RHEL - Sequence diagram](/images/provisioning-rhel-sequence.svg)
+
 ### 1. Node registration
 
 Before powering on a node, register its expected configuration in NICo using

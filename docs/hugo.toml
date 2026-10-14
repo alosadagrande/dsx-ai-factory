@@ -1,4 +1,5 @@
 baseURL = 'https://rh-ecosystem-edge.github.io/dsx-ai-factory/'
+canonifyURLs = true
 languageCode = 'en-us'
 title = 'Red Hat build of DSX AI Factory'
 

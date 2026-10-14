@@ -1,0 +1,239 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 920" width="100%" height="100%" style="background:#ffffff; font-family:'Red Hat Text', 'Red Hat Display', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;">
+  <defs>
+    <!-- Red Hat Drop Shadow Filters -->
+    <filter id="card-shadow" x="-3%" y="-4%" width="106%" height="112%" filterUnits="userSpaceOnUse">
+      <feDropShadow dx="0" dy="2" stdDeviation="4" flood-color="#000000" flood-opacity="0.08"/>
+    </filter>
+    <filter id="pill-shadow" x="-4%" y="-8%" width="108%" height="120%" filterUnits="userSpaceOnUse">
+      <feDropShadow dx="0" dy="1" stdDeviation="2" flood-color="#000000" flood-opacity="0.10"/>
+    </filter>
+    
+    <!-- Red Hat Directional Markers -->
+    <marker id="arrow-red" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto">
+      <path d="M 0 0 L 8 4 L 0 8 Z" fill="#EE0000" />
+    </marker>
+    <marker id="arrow-blue" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto">
+      <path d="M 0 0 L 8 4 L 0 8 Z" fill="#0066CC" />
+    </marker>
+  </defs>
+
+  <!-- Top Reference Header Ribbon -->
+  <g id="rh-header">
+    <rect x="30" y="20" width="900" height="42" rx="4" fill="#151515"/>
+    <rect x="30" y="20" width="6" height="42" rx="2" fill="#EE0000"/>
+    <text x="50" y="46" fill="#FFFFFF" font-size="14" font-weight="700" letter-spacing="0.6">NETWORK ARCHITECTURE | PROVISIONING &amp; OUT-OF-BAND FABRIC</text>
+  </g>
+
+  <!-- CONTAINER 1: Management Cluster -->
+  <g id="management-cluster" transform="translate(30, 80)">
+    <rect width="900" height="290" rx="8" fill="#F8F9FA" stroke="#D2D2D2" stroke-width="1.5"/>
+    <path d="M 0 8 A 8 8 0 0 1 8 0 L 892 0 A 8 8 0 0 1 900 8 L 900 38 L 0 38 Z" fill="#EE0000" />
+    <text x="24" y="24" fill="#FFFFFF" font-size="13" font-weight="700" letter-spacing="0.5">MANAGEMENT CLUSTER</text>
+    <text x="876" y="24" fill="#FFFFFF" font-size="12" font-weight="400" text-anchor="end" opacity="0.9">Control Plane / Ingress Network</text>
+
+    <!-- Subinterface Card: bond-ns.210 -->
+    <g transform="translate(30, 52)" filter="url(#card-shadow)">
+      <rect width="840" height="48" rx="6" fill="#FFFFFF" stroke="#D2D2D2" stroke-width="1.2"/>
+      <rect x="0" y="0" width="5" height="48" rx="2.5" fill="#EE0000"/>
+      <rect x="18" y="10" width="130" height="28" rx="4" fill="#F0F4F8" stroke="#D2D2D2" stroke-width="1"/>
+      <text x="83" y="28" fill="#151515" font-family="'Red Hat Mono', monospace" font-size="12.5" font-weight="700" text-anchor="middle">bond-ns.210</text>
+      
+      <!-- Arrow connecting to explanation -->
+      <path d="M 160 24 L 195 24" stroke="#EE0000" stroke-width="2" marker-end="url(#arrow-red)"/>
+      <text x="210" y="28" fill="#151515" font-size="13" font-weight="600">provisioning subinterface</text>
+      
+      <rect x="380" y="11" width="145" height="26" rx="4" fill="#FDF2F2" stroke="#F8B4B4" stroke-width="1"/>
+      <text x="452.5" y="28" fill="#EE0000" font-family="'Red Hat Mono', monospace" font-size="12" font-weight="700" text-anchor="middle">172.16.10.2/24</text>
+    </g>
+
+    <!-- MetalLB VIP Card -->
+    <g transform="translate(30, 116)" filter="url(#card-shadow)">
+      <rect width="250" height="152" rx="6" fill="#FFFFFF" stroke="#D2D2D2" stroke-width="1.2"/>
+      <rect x="0" y="0" width="250" height="38" rx="6" fill="#F0F4F8"/>
+      <rect x="0" y="35" width="250" height="3" fill="#EE0000"/>
+      <text x="20" y="24" fill="#151515" font-size="14" font-weight="700">MetalLB VIP</text>
+      
+      <!-- IP Badge -->
+      <g transform="translate(20, 52)">
+        <rect width="210" height="34" rx="4" fill="#FDF2F2" stroke="#F8B4B4" stroke-width="1"/>
+        <text x="105" y="22" fill="#EE0000" font-family="'Red Hat Mono', monospace" font-size="15" font-weight="700" text-anchor="middle">172.16.10.100</text>
+      </g>
+      <text x="20" y="110" fill="#4F5255" font-size="12" font-weight="500">L2 Load Balancing</text>
+      <text x="20" y="128" fill="#6A6E73" font-size="11">Shared Provisioning Endpoint</text>
+    </g>
+
+    <!-- Branching Service Distribution Tree -->
+    <g stroke="#EE0000" stroke-width="2" fill="none">
+      <path d="M 280 192 L 315 192"/>
+      <path d="M 315 136 L 315 248"/>
+      <!-- Service 1 line -->
+      <path d="M 315 136 L 340 136" marker-end="url(#arrow-red)"/>
+      <!-- Service 2 line -->
+      <path d="M 315 174 L 340 174" marker-end="url(#arrow-red)"/>
+      <!-- Service 3 line -->
+      <path d="M 315 211 L 340 211" marker-end="url(#arrow-red)"/>
+      <!-- Service 4 line -->
+      <path d="M 315 248 L 340 248" marker-end="url(#arrow-red)"/>
+    </g>
+
+    <!-- Core Services Stack -->
+    <!-- Service 1: nico-api -->
+    <g transform="translate(345, 118)" filter="url(#card-shadow)">
+      <rect width="525" height="35" rx="5" fill="#FFFFFF" stroke="#E0E0E0" stroke-width="1"/>
+      <rect x="8" y="6" width="95" height="23" rx="3" fill="#F0F4F8"/>
+      <text x="55.5" y="21" fill="#151515" font-family="'Red Hat Mono', monospace" font-size="12" font-weight="700" text-anchor="middle">nico-api</text>
+      <rect x="110" y="6" width="50" height="23" rx="3" fill="#FDF2F2"/>
+      <text x="135" y="21" fill="#EE0000" font-family="'Red Hat Mono', monospace" font-size="12" font-weight="700" text-anchor="middle">:443</text>
+      <text x="175" y="22" fill="#151515" font-size="12.5" font-weight="500">Core gRPC service</text>
+    </g>
+
+    <!-- Service 2: nico-pxe -->
+    <g transform="translate(345, 156)" filter="url(#card-shadow)">
+      <rect width="525" height="35" rx="5" fill="#FFFFFF" stroke="#E0E0E0" stroke-width="1"/>
+      <rect x="8" y="6" width="95" height="23" rx="3" fill="#F0F4F8"/>
+      <text x="55.5" y="21" fill="#151515" font-family="'Red Hat Mono', monospace" font-size="12" font-weight="700" text-anchor="middle">nico-pxe</text>
+      <rect x="110" y="6" width="60" height="23" rx="3" fill="#FDF2F2"/>
+      <text x="140" y="21" fill="#EE0000" font-family="'Red Hat Mono', monospace" font-size="12" font-weight="700" text-anchor="middle">:8080</text>
+      <text x="185" y="22" fill="#151515" font-size="12.5" font-weight="500">iPXE + boot artifacts</text>
+    </g>
+
+    <!-- Service 3: unbound -->
+    <g transform="translate(345, 194)" filter="url(#card-shadow)">
+      <rect width="525" height="35" rx="5" fill="#FFFFFF" stroke="#E0E0E0" stroke-width="1"/>
+      <rect x="8" y="6" width="95" height="23" rx="3" fill="#F0F4F8"/>
+      <text x="55.5" y="21" fill="#151515" font-family="'Red Hat Mono', monospace" font-size="12" font-weight="700" text-anchor="middle">unbound</text>
+      <rect x="110" y="6" width="50" height="23" rx="3" fill="#FDF2F2"/>
+      <text x="135" y="21" fill="#EE0000" font-family="'Red Hat Mono', monospace" font-size="12" font-weight="700" text-anchor="middle">:53</text>
+      <text x="175" y="22" fill="#151515" font-size="12.5" font-weight="500">DNS — .forge zone</text>
+    </g>
+
+    <!-- Service 4: nico-dhcp -->
+    <g transform="translate(345, 232)" filter="url(#card-shadow)">
+      <rect width="525" height="35" rx="5" fill="#FFFFFF" stroke="#E0E0E0" stroke-width="1"/>
+      <rect x="8" y="6" width="95" height="23" rx="3" fill="#F0F4F8"/>
+      <text x="55.5" y="21" fill="#151515" font-family="'Red Hat Mono', monospace" font-size="12" font-weight="700" text-anchor="middle">nico-dhcp</text>
+      <rect x="110" y="6" width="50" height="23" rx="3" fill="#FDF2F2"/>
+      <text x="135" y="21" fill="#EE0000" font-family="'Red Hat Mono', monospace" font-size="12" font-weight="700" text-anchor="middle">:67</text>
+      <text x="175" y="22" fill="#151515" font-size="12.5" font-weight="500">DHCP for AI Factory nodes</text>
+    </g>
+  </g>
+
+  <!-- INTERCONNECT 1: Management Cluster to ToR Switch -->
+  <g id="trunk-link">
+    <line x1="480" y1="370" x2="480" y2="445" stroke="#EE0000" stroke-width="2.5" marker-end="url(#arrow-red)"/>
+    <g transform="translate(385, 392)" filter="url(#pill-shadow)">
+      <rect width="190" height="28" rx="14" fill="#FFFFFF" stroke="#EE0000" stroke-width="1.5"/>
+      <text x="95" y="18" fill="#EE0000" font-size="12" font-weight="700" text-anchor="middle">VLAN 210 trunk</text>
+    </g>
+  </g>
+
+  <!-- CONTAINER 2: ToR Switch (Spectrum SN5610) -->
+  <g id="tor-switch" transform="translate(30, 445)">
+    <rect width="900" height="250" rx="8" fill="#F8F9FA" stroke="#D2D2D2" stroke-width="1.5"/>
+    <path d="M 0 8 A 8 8 0 0 1 8 0 L 892 0 A 8 8 0 0 1 900 8 L 900 38 L 0 38 Z" fill="#151515" />
+    <text x="24" y="24" fill="#FFFFFF" font-size="13" font-weight="700" letter-spacing="0.5">TOR SWITCH (Spectrum SN5610)</text>
+    <text x="876" y="24" fill="#A2A9B0" font-size="12" font-weight="400" text-anchor="end">Top-of-Rack Network Fabric</text>
+
+    <!-- Sub-Box Left: SVIs & Gateways -->
+    <g transform="translate(30, 52)" filter="url(#card-shadow)">
+      <rect width="405" height="175" rx="6" fill="#FFFFFF" stroke="#D2D2D2" stroke-width="1.2"/>
+      <rect x="0" y="0" width="405" height="34" rx="6" fill="#F0F4F8"/>
+      <rect x="0" y="32" width="405" height="2" fill="#0066CC"/>
+      <text x="16" y="22" fill="#151515" font-size="12.5" font-weight="700">SWITCH VIRTUAL INTERFACES (SVIs)</text>
+
+      <!-- SVI 1: vlan210 -->
+      <g transform="translate(16, 48)">
+        <rect width="68" height="24" rx="3" fill="#F0F4F8"/>
+        <text x="34" y="16.5" fill="#151515" font-family="'Red Hat Mono', monospace" font-size="11.5" font-weight="700" text-anchor="middle">vlan210</text>
+        <text x="78" y="17" fill="#4F5255" font-size="11.5" font-weight="600">SVI:</text>
+        <rect x="108" y="0" width="135" height="24" rx="3" fill="#FDF2F2" stroke="#F8B4B4" stroke-width="1"/>
+        <text x="175.5" y="16.5" fill="#EE0000" font-family="'Red Hat Mono', monospace" font-size="11.5" font-weight="700" text-anchor="middle">172.16.10.1/24</text>
+        <text x="252" y="16.5" fill="#6A6E73" font-size="11">(VRR gateway)</text>
+      </g>
+
+      <!-- SVI 2: vlan<oob> -->
+      <g transform="translate(16, 92)">
+        <rect width="78" height="24" rx="3" fill="#F0F4F8"/>
+        <text x="39" y="16.5" fill="#151515" font-family="'Red Hat Mono', monospace" font-size="11.5" font-weight="700" text-anchor="middle">vlan&lt;oob&gt;</text>
+        <text x="88" y="17" fill="#4F5255" font-size="11.5" font-weight="600">SVI:</text>
+        <rect x="118" y="0" width="145" height="24" rx="3" fill="#EDF5FB" stroke="#B8D7F2" stroke-width="1"/>
+        <text x="190.5" y="16.5" fill="#0066CC" font-family="'Red Hat Mono', monospace" font-size="11.5" font-weight="700" text-anchor="middle">&lt;oob-subnet&gt;/24</text>
+      </g>
+
+      <text x="16" y="152" fill="#6A6E73" font-size="11.5">Layer 3 Gateway &amp; Out-of-Band Routing</text>
+    </g>
+
+    <!-- Sub-Box Right: Switch Ports -->
+    <g transform="translate(465, 52)" filter="url(#card-shadow)">
+      <rect width="405" height="175" rx="6" fill="#FFFFFF" stroke="#D2D2D2" stroke-width="1.2"/>
+      <rect x="0" y="0" width="405" height="34" rx="6" fill="#F0F4F8"/>
+      <rect x="0" y="32" width="405" height="2" fill="#EE0000"/>
+      <text x="16" y="22" fill="#151515" font-size="12.5" font-weight="700">PORT ASSIGNMENTS &amp; VLANs</text>
+
+      <!-- Port 1: swp<mgmt> -->
+      <g transform="translate(16, 44)">
+        <rect width="85" height="22" rx="3" fill="#F0F4F8"/>
+        <text x="42.5" y="15" fill="#151515" font-family="'Red Hat Mono', monospace" font-size="11.5" font-weight="700" text-anchor="middle">swp&lt;mgmt&gt;</text>
+        <text x="96" y="15" fill="#EE0000" font-size="11.5" font-weight="700">trunk VLAN 210</text>
+        <text x="215" y="15" fill="#6A6E73" font-size="11.5">← management cluster</text>
+      </g>
+
+      <!-- Port 2: swp<node> -->
+      <g transform="translate(16, 80)">
+        <rect width="85" height="22" rx="3" fill="#F0F4F8"/>
+        <text x="42.5" y="15" fill="#151515" font-family="'Red Hat Mono', monospace" font-size="11.5" font-weight="700" text-anchor="middle">swp&lt;node&gt;</text>
+        <text x="96" y="15" fill="#0066CC" font-size="11.5" font-weight="700">access VLAN 210</text>
+        <text x="215" y="15" fill="#6A6E73" font-size="11.5">← provisioning NIC</text>
+      </g>
+
+      <!-- Port 3: swp<bmc> -->
+      <g transform="translate(16, 116)">
+        <rect width="85" height="22" rx="3" fill="#F0F4F8"/>
+        <text x="42.5" y="15" fill="#151515" font-family="'Red Hat Mono', monospace" font-size="11.5" font-weight="700" text-anchor="middle">swp&lt;bmc&gt;</text>
+        <text x="96" y="15" fill="#004080" font-size="11.5" font-weight="700">access VLAN &lt;oob&gt;</text>
+        <text x="235" y="15" fill="#6A6E73" font-size="11.5">← BMC NIC</text>
+      </g>
+    </g>
+  </g>
+
+  <!-- INTERCONNECT 2: Switch to Target NICs -->
+  <!-- Left Link: access VLAN 210 -->
+  <g id="link-node">
+    <line x1="250" y1="695" x2="250" y2="780" stroke="#EE0000" stroke-width="2.5" marker-end="url(#arrow-red)"/>
+    <g transform="translate(155, 722)" filter="url(#pill-shadow)">
+      <rect width="190" height="28" rx="14" fill="#FFFFFF" stroke="#EE0000" stroke-width="1.5"/>
+      <text x="95" y="18" fill="#EE0000" font-size="11.5" font-weight="700" text-anchor="middle">access VLAN 210</text>
+    </g>
+  </g>
+
+  <!-- Right Link: access VLAN <oob> -->
+  <g id="link-bmc">
+    <line x1="710" y1="695" x2="710" y2="780" stroke="#0066CC" stroke-width="2.5" marker-end="url(#arrow-blue)"/>
+    <g transform="translate(615, 722)" filter="url(#pill-shadow)">
+      <rect width="190" height="28" rx="14" fill="#FFFFFF" stroke="#0066CC" stroke-width="1.5"/>
+      <text x="95" y="18" fill="#0066CC" font-size="11.5" font-weight="700" text-anchor="middle">access VLAN &lt;oob&gt;</text>
+    </g>
+  </g>
+
+  <!-- TARGET AI FACTORY NODES SECTION -->
+  <!-- Target 1: Provisioning NIC -->
+  <g id="target-prov-node" transform="translate(60, 785)" filter="url(#card-shadow)">
+    <rect width="380" height="100" rx="8" fill="#FFFFFF" stroke="#D2D2D2" stroke-width="1.5"/>
+    <rect x="0" y="0" width="6" height="100" rx="3" fill="#EE0000"/>
+    <text x="24" y="32" fill="#151515" font-size="15" font-weight="700">Provisioning NIC</text>
+    <rect x="24" y="44" width="160" height="24" rx="4" fill="#FDF2F2" stroke="#F8B4B4" stroke-width="1"/>
+    <text x="104" y="60" fill="#EE0000" font-size="12" font-weight="700" text-anchor="middle">AI Factory Node</text>
+    <text x="24" y="85" fill="#4F5255" font-size="11.5">Host Boot, PXE &amp; OS Deployment</text>
+  </g>
+
+  <!-- Target 2: BMC NIC (Redfish) -->
+  <g id="target-bmc-node" transform="translate(520, 785)" filter="url(#card-shadow)">
+    <rect width="380" height="100" rx="8" fill="#FFFFFF" stroke="#D2D2D2" stroke-width="1.5"/>
+    <rect x="0" y="0" width="6" height="100" rx="3" fill="#0066CC"/>
+    <text x="24" y="32" fill="#151515" font-size="15" font-weight="700">BMC NIC <tspan font-weight="400" fill="#4F5255">(Redfish)</tspan></text>
+    <rect x="24" y="44" width="160" height="24" rx="4" fill="#EDF5FB" stroke="#B8D7F2" stroke-width="1"/>
+    <text x="104" y="60" fill="#0066CC" font-size="12" font-weight="700" text-anchor="middle">AI Factory Node</text>
+    <text x="24" y="85" fill="#4F5255" font-size="11.5">Out-of-Band Hardware Control &amp; Power</text>
+  </g>
+</svg>
+

@@ -12,31 +12,7 @@ the AI Factory infrastructure, and the **AI Factory nodes** that run AI workload
 
 ## Cluster model
 
-```
-┌───────────────────────────────────────────────────────────────┐
-│                    Management Cluster                         │
-│                                                               │
-│  ┌─────────────────────┐   ┌───────────────────────────────┐  │
-│  │  NICo (Infra        │   │  RMS (Rack Management         │  │
-│  │  Controller)        │   │  Service)                     │  │
-│  │                     │   │                               │  │
-│  │  • Bare-metal       │   │  • Switch fabric config       │  │
-│  │    provisioning     │   │  • Firmware updates           │  │
-│  │  • ZTP / DHCP       │   │  • Power management           │  │
-│  │  • Machine          │   │  • Hardware inventory         │  │
-│  │    validation       │   │                               │  │
-│  └─────────┬───────────┘   └──────────────┬────────────────┘  │
-│            │ Redfish / iPXE               │ NVUE / Redfish    │
-└────────────┼──────────────────────────────┼───────────────────┘
-             │ Provisioning network         │ Management network
-┌────────────┼──────────────────────────────┼───────────────────┐
-│            │    DSX AI Factory Nodes      │                   │
-│  ┌─────────▼──────────────────────────────▼────────────────┐  │
-│  │  NVIDIA GPU / DPU Nodes     NVIDIA Spectrum-X Switches  │  │
-│  │  (bare-metal, RHEL/OCP)     (network fabric)            │  │
-│  └─────────────────────────────────────────────────────────┘  │
-└───────────────────────────────────────────────────────────────┘
-```
+![Architecture - Cluster model](/images/architecture-cluster-model.svg)
 
 ## Components
 

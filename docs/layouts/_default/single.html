@@ -7,6 +7,15 @@
         </nav>
     </aside>
     <article>
+        <nav class="breadcrumb" aria-label="Breadcrumb">
+            <a href="{{ "/" | relURL }}">Home</a>
+            {{ range .Ancestors.Reverse }}
+            <span aria-hidden="true">›</span>
+            <a href="{{ .Permalink }}">{{ .Title }}</a>
+            {{ end }}
+            <span aria-hidden="true">›</span>
+            <span aria-current="page">{{ .Title }}</span>
+        </nav>
         <header>
             <h1>{{ .Title }}</h1>
             {{ if .Params.tags }}
@@ -27,6 +36,20 @@
         <div class="content">
             {{ .Content }}
         </div>
+        <nav class="page-nav" aria-label="Previous and next pages">
+            {{ with .PrevInSection }}
+            <a class="page-nav-prev" href="{{ .Permalink }}">
+                <span>← Previous</span>
+                <span class="page-nav-title">{{ .Title }}</span>
+            </a>
+            {{ end }}
+            {{ with .NextInSection }}
+            <a class="page-nav-next" href="{{ .Permalink }}">
+                <span>Next →</span>
+                <span class="page-nav-title">{{ .Title }}</span>
+            </a>
+            {{ end }}
+        </nav>
     </article>
 </div>
 {{ end }}

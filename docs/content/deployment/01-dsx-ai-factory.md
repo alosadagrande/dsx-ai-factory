@@ -134,9 +134,10 @@ oc apply -f metallb-provisioning.yaml
 > oc rollout status daemonset/ovnkube-node -n openshift-ovn-kubernetes
 > ```
 
-> **DHCP relay:** DHCP is broadcast-only. Configure an `ip helper-address
-> <nico-dhcp-vip>` on the provisioning network SVI of your top-of-rack switch
-> so that DHCP requests from AI Factory nodes reach the `nico-dhcp` VIP.
+> **DHCP relay:** DHCP relay is required when the provisioning VLAN is
+> L3-separated from the management cluster. See
+> [Network prerequisites](../00-network-prerequisites/#dhcp-relay) for the
+> full relay configuration and the conditions under which it can be omitted.
 
 Once the pool is created, set the `loadBalancerIP` for each service in your
 `values.yaml`:
