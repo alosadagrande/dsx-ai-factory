@@ -1,6 +1,7 @@
 ---
 title: "Prerequisites"
 weight: 2
+description: "Hardware, software, network, and subscription requirements"
 ---
 
 Before deploying the Red Hat build of DSX AI Factory, ensure the following

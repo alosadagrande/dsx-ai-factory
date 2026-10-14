@@ -1,9 +1,21 @@
 {{ define "main" }}
-<h1>{{ .Site.Title }}</h1>
-<p>{{ .Site.Params.description }}</p>
-<ul>
+<div class="home-hero">
+    <h1>{{ .Site.Title }}</h1>
+    <div class="devpreview-notice">
+        <strong>Developer Preview:</strong> This product is not supported
+        under Red Hat production service level agreements and may not be
+        functionally complete. For more information, see
+        <a href="https://access.redhat.com/support/offerings/devpreview"
+           target="_blank" rel="noopener">Red Hat Developer Preview</a>.
+    </div>
+</div>
+
+<div class="tile-grid">
 {{ range .Site.Sections }}
-    <li><a href="{{ .Permalink }}">{{ .Title }}</a></li>
+    <a class="tile" href="{{ .Permalink }}">
+        <div class="tile-title">{{ .Title }}</div>
+        {{ with .Description }}<div class="tile-desc">{{ . }}</div>{{ end }}
+    </a>
 {{ end }}
-</ul>
+</div>
 {{ end }}

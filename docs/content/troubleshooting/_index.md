@@ -1,6 +1,7 @@
 ---
 title: "Troubleshooting"
 weight: 5
+description: "Stuck states, network issues, certificate and workflow failures"
 ---
 
 This section covers common failure modes and their resolutions. Each entry
@@ -25,7 +26,7 @@ discovery.
 
 ```bash
 # Verify the machine is registered
-nico-admin-cli expected-machine list
+nico-admin-cli expected-machine show
 
 # Check nico-dhcp received the DHCP DISCOVER
 oc logs -n nico-system -l app=nico-dhcp --tail=200 | grep <bmc-mac>
@@ -37,11 +38,11 @@ oc get svc -n nico-system nico-dhcp
 If the BMC has a static IP, provide it explicitly when registering:
 
 ```bash
-nico-admin-cli expected-machine create \
-  --bmc-mac <bmc-mac-address> \
-  --bmc-ip <static-bmc-ip> \
-  --segment <segment-name> \
-  --sku <sku-name>
+nico-admin-cli expected-machine add \
+  --bmc-username <bmc-username> \
+  --bmc-password <bmc-password> \
+  --chassis-serial-number <serial-number>
+# see: nico-admin-cli expected-machine add --help for full options including static BMC IP
 ```
 
 ### Stuck in `Validating`
@@ -57,15 +58,15 @@ Hardware validation is running longer than expected (typically 5–15 minutes).
 **Resolution:**
 
 ```bash
-# Read the validation failure reason
-nico-admin-cli machine get --machine-id <machine-id>
+# Show machine details including validation failure reason
+nico-admin-cli machine show <machine-id>
 
 # Check nico-api for validation events
-oc logs -n nico-system -l app=nico-api --tail=200 | grep -i "valid\|machine-id"
+oc logs -n nico-system -l app=nico-api --tail=200 | grep -i "valid"
 ```
 
 If the BOM does not match, update the SKU or re-register the machine with
-the correct `--sku` value. Trigger a re-validation by power-cycling the node
+the correct SKU. Trigger a re-validation by power-cycling the node
 after correcting the registration.
 
 ### `ValidationFailed`
@@ -76,7 +77,7 @@ bill of materials.
 **Resolution:**
 
 ```bash
-nico-admin-cli machine get --machine-id <machine-id>
+nico-admin-cli machine show <machine-id>
 ```
 
 The `validation_failure_reason` field lists each mismatched component. Correct
@@ -242,11 +243,11 @@ action, then power-cycle the affected node to restart provisioning.
 ## Useful diagnostic commands
 
 ```bash
-# All machine states
-nico-admin-cli machine list
+# All machines and states
+nico-admin-cli machine show
 
 # All active instances
-nico-admin-cli instance list
+nico-admin-cli instance show
 
 # NICo Core logs (provisioning state machine)
 oc logs -n nico-system -l app=nico-api --tail=200 -f

@@ -22,9 +22,14 @@ iPXE and passes the worker ignition URL in kernel arguments.
 
 ## How NICo provisions RHCOS workers
 
-NICo uses its **InlineIpxe** OS variant to boot the RHCOS live installer.
-Ignition is delivered via kernel arguments — not through NICo's `user_data`
-field (which is cloud-init only and ignored by RHCOS).
+The discovery, Scout boot, and hardware validation phases are identical
+to RHEL provisioning — see the
+[provisioning flow](../../overview/#provisioning-flow) in
+the Architecture section. After validation, the node enters `Ready` state.
+
+NICo then uses its **InlineIpxe** OS variant to boot the RHCOS live
+installer. Ignition is delivered via kernel arguments — not through
+NICo's `user_data` field (which is cloud-init only and ignored by RHCOS).
 
 The provisioning sequence:
 
@@ -37,51 +42,39 @@ The provisioning sequence:
 
 ## Step 1 — Register the RHCOS OS definition
 
-Create an OS record in NICo that describes how to boot the RHCOS installer.
-Replace the URLs with the actual paths to your RHCOS live artifacts, either
-served by `nico-pxe`'s artifact cache or from an internal HTTP server.
+RHCOS OS definition configuration uses iPXE templates with kernel arguments
+for coreos-installer. This requires additional iPXE template parameters
+beyond the basic OS record. See:
 
 ```bash
-nico-admin-cli operating-system create \
-  --name "openshift-coreos" \
-  --ipxe-template-id <coreos-ipxe-template-id> \
-  --site-id <site-id> \
-  --kernel-params "rd.neednet=1 \
-    coreos.inst.install_dev=/dev/sda \
-    coreos.live.rootfs_url=http://<nico-pxe-vip>/public/blobs/internal/x86_64/rhcos-live-rootfs.x86_64.img \
-    coreos.inst.ignition_url=https://api-int.<cluster-domain>:22623/config/worker" \
-  --kernel-url "http://<nico-pxe-vip>/public/blobs/internal/x86_64/rhcos-live-kernel-x86_64" \
-  --initrd-url "http://<nico-pxe-vip>/public/blobs/internal/x86_64/rhcos-live-initramfs.x86_64.img"
+nico-admin-cli operating-system create --help
+nico-admin-cli ipxe-template --help
 ```
 
-> **Note:** `coreos.inst.install_dev` must match the target node's primary
-> disk device name (typically `/dev/sda` for SATA/SAS or `/dev/nvme0n1` for
-> NVMe). Verify with the hardware inventory from the Scout discovery phase.
+Refer to the [NICo ingesting hosts documentation](https://docs.nvidia.com/infra-controller/documentation/provisioning-day-0/ingesting-hosts) for the full InlineIpxe workflow.
 
-Wait for the OS record to reach `Ready` status before proceeding:
+Once created, verify the OS record:
 
 ```bash
-nico-admin-cli operating-system get <os-id>
+nico-admin-cli operating-system show
+nico-admin-cli operating-system show <os-id>
 ```
 
 ## Step 2 — Create an instance type for OpenShift workers
 
-Create an instance type that references the RHCOS OS definition and binds it
-to the machines you want to provision:
+Create an instance type for RHCOS workers:
 
 ```bash
-nico-admin-cli instance-type create \
-  --name "openshift-worker" \
-  --operating-system-id <os-id> \
-  --segment <provisioning-segment-name>
+nico-admin-cli instance-type create --name "openshift-worker"
+# see: nico-admin-cli instance-type create --help for full options
 ```
 
-Associate the validated machines with this instance type:
+Associate validated machines with this instance type:
 
 ```bash
-nico-admin-cli instance-type machine-association create \
-  --instance-type-id <instance-type-id> \
-  --machine-id <machine-id>
+nico-admin-cli instance-type associate <instance-type-id> <machine-id>
+# Multiple machines (comma-separated, no spaces):
+nico-admin-cli instance-type associate <instance-type-id> <id1>,<id2>
 ```
 
 ## Step 3 — Allocate instances
@@ -89,18 +82,18 @@ nico-admin-cli instance-type machine-association create \
 Allocate an instance for each machine to trigger RHCOS installation:
 
 ```bash
-nico-admin-cli instance create \
-  --instance-type-id <instance-type-id> \
-  --machine-id <machine-id> \
-  --tenant-id <tenant-id>
+nico-admin-cli instance allocate \
+  --prefix-name <name> \
+  --subnet <cidr>
+# see: nico-admin-cli instance allocate --help for full options
 ```
 
 NICo will power-cycle the node, boot it to the RHCOS live installer via iPXE,
 and run `coreos-installer`. Monitor progress:
 
 ```bash
-# Watch machine state transitions
-oc get machines -n nico-system -w
+# Show machine state
+nico-admin-cli machine show
 
 # View provisioning events
 oc logs -n nico-system -l app=nico-api --tail=100 -f
@@ -109,42 +102,13 @@ oc logs -n nico-system -l app=nico-api --tail=100 -f
 The machine transitions through `Assigned` → `Provisioning` → `Ready` once
 RHCOS is installed and the node has rebooted.
 
-## Step 4 — Approve worker CSRs
+## Step 4 — Install GPU and Network Operator on the workload cluster
 
-New worker nodes generate two certificate signing requests — one for the node
-bootstrapper and one for the kubelet serving certificate. Approve them on the
-workload cluster:
+Install the GPU Operator and Network Operator on the workload cluster via
+OperatorHub before scheduling GPU workloads:
 
-```bash
-# Approve all pending CSRs (run twice — once for each certificate)
-oc get csr -o name | xargs oc adm certificate approve
-```
-
-The node should appear in the workload cluster within a few minutes:
-
-```bash
-oc get nodes
-```
-
-For production deployments, configure the cluster's **Machine Approver** to
-approve CSRs automatically based on machine inventory.
-
-## Step 5 — Verify GPU and Network Operator
-
-Once workers are `Ready`, the GPU Operator and Network Operator — installed
-via OLM by the `dsx-ai-factory-prereqs` chart — automatically detect the
-new nodes and install the required drivers:
-
-```bash
-# GPU Operator daemonset rolls out to new workers
-oc get daemonset -n gpu-operator
-
-# Network Operator configures SR-IOV and RDMA
-oc get sriovnetworknodestates -n sriov-network-operator
-```
-
-Allow several minutes for driver installation and device plugin registration
-to complete before scheduling GPU workloads.
+- [NVIDIA GPU Operator on OpenShift](https://docs.nvidia.com/datacenter/cloud-native/openshift/latest/openshift-container-platform.html)
+- [NVIDIA Network Operator](https://docs.nvidia.com/networking/display/kubernetes2641/index.html)
 
 ## Next steps
 

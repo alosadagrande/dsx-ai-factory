@@ -9,74 +9,40 @@ hardware validation to a running RHEL installation without manual intervention.
 
 ## How NICo provisions RHEL
 
-The provisioning sequence proceeds in four phases:
+NICo drives RHEL installation automatically once a node is registered.
+The discovery, Scout boot, and hardware validation phases are identical
+for all operating systems — see the
+[provisioning flow](../../overview/#provisioning-flow) in
+the Architecture section. This page covers the RHEL-specific steps.
 
-![Provisiong - RHEL - Sequence diagram](/images/provisioning-rhel-sequence.svg)
+### Step 1 — Register the node
 
-### 1. Node registration
-
-Before powering on a node, register its expected configuration in NICo using
-the `nico-admin-cli` tool:
+Before powering on a node, register its expected configuration in NICo:
 
 ```bash
-nico-admin-cli expected-machine create \
-  --bmc-mac <bmc-mac-address> \
-  --segment <provisioning-segment-name> \
-  --sku <sku-name>
+nico-admin-cli expected-machine add \
+  --bmc-username <bmc-username> \
+  --bmc-password <bmc-password> \
+  --chassis-serial-number <serial-number>
+# see: nico-admin-cli expected-machine add --help for full options (SKU, segment, interfaces)
 ```
 
-This tells NICo to expect a machine with that BMC MAC address, which network
-segment it will boot on, and which hardware SKU (bill of materials) it must
-match before being admitted to the pool.
+Power on the node. NICo drives discovery, Scout boot, and BOM validation
+automatically. Once validated, the node enters the `Ready` pool.
 
-### 2. Discovery — Scout OS
+### Step 2 — Assign an instance (RHEL)
 
-When the node powers on, NICo's DHCP server (`nico-dhcp`) assigns it an IP
-address and provides a boot URL pointing to the `nico-pxe` service. The node
-UEFI HTTP-boots `ipxe.efi`, which chainloads a per-node boot script from
-`nico-pxe`.
-
-NICo dispatches the **Scout discovery OS** — a two-stage boot image:
-
-| Boot blob | Role |
-|---|---|
-| `ipxe.efi` | iPXE UEFI loader with embedded chainload script |
-| `scout.efi` | Minimal UKI loader; downloads and measures Scout rootfs |
-| `scout.squashfs` | Scout rootfs containing the `forge-scout` hardware agent |
-
-The loader (`scout.efi`) downloads `scout.squashfs`, measures it into TPM PCR 16
-for integrity verification, mounts it as an overlay, and boots into it. The
-`forge-scout` agent then enumerates the node's hardware — CPUs, memory, NICs,
-GPUs, storage — and reports the inventory to NICo over mTLS gRPC.
-
-All three boot blobs are served by the `infra-controller-pxe` container image
-running in the management cluster.
-
-### 3. Hardware validation
-
-NICo validates the reported inventory against the expected SKU bill of
-materials. If the hardware matches, the node advances to the validation phase
-where it boots Scout a second time to collect runtime measurements (GPU health,
-NIC link status).
-
-If validation fails, the node enters `ValidationFailed` state. Check the
-hardware against the expected SKU and verify that all components are seated
-and recognized.
-
-### 4. RHEL installation
-
-Once validated, NICo marks the node `Ready` in its inventory pool. When an
-instance is assigned to the node (either automatically or by an operator), NICo:
+When an instance is assigned, NICo:
 
 1. Configures the node's network segment and storage via `nico-site-agent`
 2. Triggers a PXE boot to the **qcow-imager** boot image (`qcow-imager.efi`)
-3. `qcow-imager` writes a RHEL qcow2 image to the node's primary disk using
-   `disk_imaging.sh`
-4. The node reboots from disk into RHEL
-5. NICo clears the PXE boot flag; the node will boot from disk on all
-   subsequent power-ons
+3. `qcow-imager` writes a RHEL qcow2 image to the node's primary disk
+4. The node reboots from disk into RHEL; PXE override cleared
 
 ## Machine states reference
+
+> These are simplified state names for documentation purposes. The internal NICo state machine is more granular — see the [NICo managed host state machine](https://docs.nvidia.com/infra-controller/documentation/architecture/state-machines/managed-host) for the full state diagram.
+
 
 | State | Description |
 |---|---|
@@ -93,10 +59,10 @@ Watch machine state transitions:
 
 ```bash
 # List all machines and their current state
-oc get machines -n nico-system
+nico-admin-cli machine show
 
-# Watch a specific machine
-oc get machine <machine-name> -n nico-system -w
+# Show a specific machine
+nico-admin-cli machine show <machine-id>
 
 # View NICo API logs for provisioning events
 oc logs -n nico-system -l app=nico-api --tail=100 -f
@@ -105,26 +71,26 @@ oc logs -n nico-system -l app=nico-api --tail=100 -f
 The NICo UI also provides a real-time view of machine state and provisioning
 progress, accessible via the `nico-rest-api` service.
 
+## Cloud-init
+
+> **Developer Preview limitation:** Cloud-init first-boot customization
+> (user accounts, SSH keys, network config via `user_data`) is not
+> supported in this release. `qcow-imager` writes the RHEL image as-is;
+> no cloud-init datasource is injected. Bake any required configuration
+> into the qcow2 image before provisioning.
+
 ## RHEL image configuration
 
-The RHEL qcow2 image used by `qcow-imager` is referenced in the NICo
-configuration as an OS image record. Configure the image URL in the NICo
-deployment values:
+Register the RHEL qcow2 image as an OS record in NICo using `nico-admin-cli`:
 
-```yaml
-nico:
-  nico-pxe:
-    config:
-      osImages:
-        - name: rhel-10
-          url: https://<your-artifact-store>/rhel-10-x86_64.qcow2
-          sha256: <sha256-of-image>
+```bash
+nico-admin-cli operating-system create --name rhel-10
+# see: nico-admin-cli operating-system create --help for artifact/iPXE template options
 ```
 
-The image can be served from an internal HTTP server, an S3-compatible store,
-or proxied through `nico-pxe`'s artifact cache. Set the caching strategy
-to `CacheAsNeeded` to have `nico-pxe` download and cache the image locally
-on first use.
+The image URL must be reachable from the management cluster at provisioning
+time. It can be served from an internal HTTP server, an S3-compatible object
+store, or proxied through `nico-pxe`'s artifact cache.
 
 ## Further reading
 

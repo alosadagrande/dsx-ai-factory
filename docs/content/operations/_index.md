@@ -1,6 +1,7 @@
 ---
 title: "Operations"
 weight: 4
+description: "Adding nodes, maintenance, monitoring, and upgrades"
 ---
 
 This section covers day-2 management tasks for a running DSX AI Factory
@@ -17,10 +18,11 @@ To add a new AI Factory compute node after initial deployment:
 2. **Register the node** in NICo before powering it on:
 
    ```bash
-   nico-admin-cli expected-machine create \
-     --bmc-mac <bmc-mac-address> \
-     --segment <provisioning-segment-name> \
-     --sku <sku-name>
+   nico-admin-cli expected-machine add \
+     --bmc-username <bmc-username> \
+     --bmc-password <bmc-password> \
+     --chassis-serial-number <serial-number>
+   # see: nico-admin-cli expected-machine add --help for full options (SKU, segment, interfaces)
    ```
 
 3. **Power on** the node. NICo drives the full provisioning sequence
@@ -31,7 +33,7 @@ To add a new AI Factory compute node after initial deployment:
 4. **Monitor** until the machine reaches `Ready`:
 
    ```bash
-   oc get machines -n nico-system -w
+   nico-admin-cli machine show
    ```
 
 ## Reprovisioning a node
@@ -41,7 +43,8 @@ To wipe and reprovision an existing node:
 1. **Release the instance** to return the machine to the pool:
 
    ```bash
-   nico-admin-cli instance delete --instance-id <instance-id>
+   nico-admin-cli instance release --instance <instance-id>
+   # or by machine: nico-admin-cli instance release --machine <machine-id>
    ```
 
    NICo powers off the node, wipes it, and transitions it back to `Ready`.
@@ -49,10 +52,10 @@ To wipe and reprovision an existing node:
 2. **Assign a new instance** to trigger reprovisioning:
 
    ```bash
-   nico-admin-cli instance create \
-     --instance-type-id <instance-type-id> \
-     --machine-id <machine-id> \
-     --tenant-id <tenant-id>
+   nico-admin-cli instance allocate \
+     --prefix-name <name> \
+     --subnet <cidr>
+   # see: nico-admin-cli instance allocate --help for full options
    ```
 
 ## Machine maintenance
@@ -60,11 +63,14 @@ To wipe and reprovision an existing node:
 To prevent new instance assignments (for hardware work, firmware updates, etc.):
 
 ```bash
-# Enter maintenance mode
-nico-admin-cli machine maintenance enable --machine-id <machine-id>
+# Enter maintenance mode (requires a reference ticket URL)
+nico-admin-cli managed-host maintenance on \
+  --host <managed-host-id> \
+  --reference <ticket-url>
 
 # Return to service
-nico-admin-cli machine maintenance disable --machine-id <machine-id>
+nico-admin-cli managed-host maintenance off \
+  --host <managed-host-id>
 ```
 
 Maintenance mode prevents NICo from assigning new instances to the node.
@@ -76,6 +82,9 @@ oc adm drain <node-name> --ignore-daemonsets --delete-emptydir-data
 ```
 
 ## Machine states reference
+
+> Simplified state names — see the [NICo managed host state machine](https://docs.nvidia.com/infra-controller/documentation/architecture/state-machines/managed-host) for the full diagram.
+
 
 | State | Description |
 |---|---|
@@ -92,10 +101,10 @@ oc adm drain <node-name> --ignore-daemonsets --delete-emptydir-data
 
 ```bash
 # All machines and states
-oc get machines -n nico-system
+nico-admin-cli machine show
 
-# Watch a specific machine
-oc get machine <machine-name> -n nico-system -w
+# Specific machine
+nico-admin-cli machine show <machine-id>
 ```
 
 ### Logs

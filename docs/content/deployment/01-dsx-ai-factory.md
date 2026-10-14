@@ -40,24 +40,24 @@ depend on your network topology:
 ```yaml
 nico:
   nico-dhcp:
-    # DHCP range for the provisioning network
+    # DHCP range for the provisioning network (Kea subnet4 format)
     config:
-      subnets:
-        - subnet: "192.168.1.0/24"
-          pools:
-            - start: "192.168.1.100"
-              end: "192.168.1.200"
+      kea:
+        subnet4:
+          - subnet: "<provisioning-network-cidr>"   # e.g. 172.16.10.0/24
+            pools:
+              - "<pool-start>-<pool-end>"            # e.g. 172.16.10.100-172.16.10.200
 
   nico-api:
-    # Database credentials (from Crunchy PG)
+    # Database host: Crunchy PGO creates <cluster-name>-primary service
     database:
-      host: nico-primary.dsx-ai-factory.svc
+      host: nico-site-pg-primary.nico-system.svc
       name: nico
 
 rack-manager:
   apiServer:
     database:
-      host: rms-primary.dsx-ai-factory.svc
+      host: rms-pg-primary.nico-system.svc
       name: rms
 ```
 
@@ -181,12 +181,12 @@ dig @$VIP example.local  # DNS
 # Check all pods are running
 oc get pods -n nico-system
 
-# Verify NICo API is healthy (through the LoadBalancer VIP)
-curl -k https://<provisioning-network-vip>/api/v1/health
+# Verify NICo REST API is healthy (port 8388, not the gRPC VIP port 443)
+oc port-forward -n nico-system svc/nico-rest-api 8388:8388 &
+curl -k https://localhost:8388/api/v1/health
 
-# Verify RMS API is healthy
-oc port-forward -n nico-system svc/rack-manager 8801:8801 &
-curl http://localhost:8801/healthz
+# Verify RMS pods are running
+oc get pods -n nico-system -l app.kubernetes.io/name=rack-manager
 ```
 
 ## Next steps

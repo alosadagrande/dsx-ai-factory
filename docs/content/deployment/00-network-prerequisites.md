@@ -117,7 +117,7 @@ subnets, routed through the SVI). Configure the relay on the provisioning
 VLAN SVI to forward broadcasts to the `nico-dhcp` VIP:
 
 ```bash
-# Cumulus NVUE — on the provisioning VLAN SVI (both switches)
+# Cumulus NVUE (syntax illustrative — verify with your switch firmware version):
 nv set interface vlan<provisioning-vlan-id> ip dhcp-relay server-ip <nico-dhcp-vip>
 nv set interface vlan<provisioning-vlan-id> ip dhcp-relay gateway-interface vlan<provisioning-vlan-id>
 nv config apply --timeout 120
@@ -186,7 +186,7 @@ Once a tenant instance is allocated in NICo, NICo automatically programs
 the switch fabric to assign the node's NIC to the tenant's VNI. The node
 exits the provisioning VLAN and joins the tenant's virtual network as a
 north-south NIC. This uses NICo's VPC and Subnet model — VPCs map to VNIs,
-and NICo drives the data-plane update via NVUE REST API directly (spectrum-fabric provider).
+and NICo drives the data-plane update via NVUE REST API directly (spectrum-fabric provider — available in the extensible-arch branch; consult your NICo version).
 
 Users do not configure VNIs manually. For details on the VPC and Subnet
 model, see the
