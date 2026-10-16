@@ -1,6 +1,6 @@
 ---
 title: "Deploying RHEL"
-weight: 2
+weight: 6
 ---
 
 NICo provisions RHEL on AI Factory bare-metal compute nodes automatically.

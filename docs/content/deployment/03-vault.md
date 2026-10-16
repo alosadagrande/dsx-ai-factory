@@ -1,6 +1,6 @@
 ---
 title: "Deploying site infrastructure and Vault"
-weight: 3
+weight: 4
 ---
 
 The site infrastructure layer runs in the `nico-system` namespace and provides

@@ -1,6 +1,6 @@
 ---
 title: "Network prerequisites"
-weight: 0
+weight: 1
 ---
 
 For hardware topology — switch models (SN5610 Spectrum-X, SN2201 OOB),

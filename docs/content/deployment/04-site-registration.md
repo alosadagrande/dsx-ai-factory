@@ -1,6 +1,6 @@
 ---
 title: "Registering a site and deploying NICo"
-weight: 4
+weight: 5
 ---
 
 With Vault initialised and the cloud infrastructure running, deploy NICo Core

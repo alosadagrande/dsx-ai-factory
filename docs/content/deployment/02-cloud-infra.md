@@ -1,6 +1,6 @@
 ---
 title: "Deploying cloud infrastructure"
-weight: 2
+weight: 3
 ---
 
 The cloud infrastructure layer runs in the `nico-rest` namespace and provides

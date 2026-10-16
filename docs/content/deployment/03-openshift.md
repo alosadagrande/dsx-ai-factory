@@ -1,6 +1,6 @@
 ---
 title: "Deploying OpenShift"
-weight: 3
+weight: 7
 ---
 
 NICo provisions OpenShift worker nodes on AI Factory bare-metal compute nodes
