@@ -31,8 +31,7 @@ Or directly with Helm:
 helm install dsx-ai-factory-prereqs \
   oci://ghcr.io/rh-ecosystem-edge/dsx-ai-factory/charts/dsx-ai-factory-prereqs \
   --version 0.1.0 \
-  --namespace nico-system \
-  --create-namespace \
+  --namespace default \
   --wait --timeout 15m
 ```
 
@@ -40,12 +39,48 @@ This installs cert-manager, Crunchy PostgreSQL, RHBK (Keycloak), MetalLB,
 External Secrets Operator, and NMState via OLM subscriptions, then waits for
 each operator's CRDs to be established.
 
-> **If post-install hooks time out** (MetalLB webhook race): reinstall with
-> `--no-hooks` then run manually:
-> ```bash
-> oc wait --for=condition=Established crd/metallbs.metallb.io --timeout=10m
-> oc wait --for=condition=Established crd/nmstates.nmstate.io --timeout=10m
-> ```
+**If `helm` install times out** (the install has not finished), follow the
+post-install hook that waits for the operators — reference it by Job name, since
+the pod name is generated:
+
+```bash
+oc logs -n default job/dsx-ai-factory-prereqs-wait-operators -f
+```
+
+> These hook Jobs delete themselves once they succeed, so after a successful
+> install you will not see them — a `deployed` release status means the hooks
+> completed.
+
+### Verify the prerequisites
+
+Check the Helm release reached `deployed`:
+
+```bash
+helm list -n default
+# NAME                     STATUS     CHART
+# dsx-ai-factory-prereqs   deployed   dsx-ai-factory-prereqs-0.1.0
+```
+
+Confirm the operators are installed:
+
+```bash
+oc get operators
+# cert-manager, crunchy-postgres, rhbk-keycloak, external-secrets, metallb, nmstate
+```
+
+Confirm the NICo ClusterIssuers are `Ready`:
+
+```bash
+oc get clusterissuer
+# nico-bootstrap-issuer   True
+# nico-rest-ca-issuer     True
+```
+
+The root CA itself is a `Certificate`:
+
+```bash
+oc get certificate -A | grep nico-root-ca
+```
 
 ## Step 2 — Configure MetalLB VIPs for provisioning services
 
