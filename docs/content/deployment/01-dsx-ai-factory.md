@@ -95,7 +95,12 @@ services.
 | `nico-pxe` | 8080 | TCP | iPXE server and boot artifact serving |
 | `unbound` | 53 | UDP+TCP | DNS for the `.forge` provisioning zone |
 | `nico-dhcp` | 67 | UDP | DHCP for AI Factory nodes |
-| `nico-ssh-console-rs` | 2222 | TCP | SSH console access |
+
+> **Optional — `nico-ssh-console-rs` (TCP 2222):** gives admins and tenants SSH
+> access to the bare-metal nodes' virtual serial console (Serial-over-LAN, via
+> the BMC). It also continuously captures each node's console output (kernel,
+> UEFI/BIOS, kernel panics) to log files and can forward them to Loki/Grafana
+> through an optional OpenTelemetry sidecar. It is not required for provisioning.
 
 All services share a single VIP. Create an `IPAddressPool` and
 `L2Advertisement` in the `metallb-system` namespace:
@@ -121,9 +126,10 @@ spec:
   interfaces:
     - <provisioning-nic>
 ```
+Then, apply the yaml definition to your management cluster:
 
 ```bash
-oc apply -f metallb-provisioning.yaml
+$ oc apply -f metallb-provisioning.yaml
 ```
 
 > **OVN gateway requirement:** Enable local-gateway mode if not already set:
