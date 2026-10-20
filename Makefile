@@ -230,11 +230,11 @@ helm-dep-build: ## Build Helm chart dependencies
 # =============================================================================
 
 deploy-prereqs: ## Install OLM prerequisite operators (cert-manager, PG, Keycloak, MetalLB, ESO, NMState)
-	helm upgrade --install -n default dsx-ai-factory-prereqs \
+	helm upgrade --install -n dsx-ai-factory dsx-ai-factory-prereqs \
 		charts/prereqs/ \
 		$(if $(PREREQS_VALUES),-f $(PREREQS_VALUES)) \
 		$(DATAPLANE_PREREQS_SET) \
-		--wait --timeout 15m
+		--create-namespace --wait --timeout 15m
 
 # =============================================================================
 # Deploy — Cloud profile (Temporal, Keycloak, Crunchy PG cloud, NICo REST)
