@@ -36,7 +36,8 @@ Or directly with Helm:
 helm install dsx-ai-factory-prereqs \
   oci://ghcr.io/rh-ecosystem-edge/dsx-ai-factory/charts/dsx-ai-factory-prereqs \
   --version 0.1.0 \
-  --namespace default \
+  --namespace dsx-ai-factory \
+  --create-namespace \
   --wait --timeout 15m
 ```
 
@@ -49,7 +50,7 @@ post-install hook that waits for the operators — reference it by Job name, sin
 the pod name is generated:
 
 ```bash
-oc logs -n default job/dsx-ai-factory-prereqs-wait-operators -f
+oc logs -n dsx-ai-factory job/dsx-ai-factory-prereqs-wait-operators -f
 ```
 
 > These hook Jobs delete themselves once they succeed, so after a successful
@@ -61,7 +62,7 @@ oc logs -n default job/dsx-ai-factory-prereqs-wait-operators -f
 Check the Helm release reached `deployed`:
 
 ```bash
-helm list -n default
+helm list -n dsx-ai-factory
 # NAME                     STATUS     CHART
 # dsx-ai-factory-prereqs   deployed   dsx-ai-factory-prereqs-0.1.0
 ```
