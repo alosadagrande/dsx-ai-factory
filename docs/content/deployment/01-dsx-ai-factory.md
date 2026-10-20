@@ -16,6 +16,11 @@ Helm releases across three namespaces:
 The full sequence is automated by the `Makefile` included in this repository.
 The steps below walk through each phase in order.
 
+> The `Makefile` also offers `make deploy-dataplane-vip`, a shortcut that runs
+> the full site deployment end to end (prerequisites → site infrastructure →
+> NICo Core) with the MetalLB VIP pre-wired. See the `Makefile` for the required
+> `DATAPLANE_*` variables.
+
 ## Step 1 — Install prerequisite operators
 
 The `prereqs` chart installs the OLM operators that all subsequent releases
@@ -92,7 +97,7 @@ services.
 | Service | Port | Protocol | Purpose |
 |---|---|---|---|
 | `nico-api` | 443 | TCP | Core gRPC API; IP SAN in the TLS certificate |
-| `nico-pxe` | 8080 | TCP | iPXE server and boot artifact serving |
+| `nico-pxe` | 80, 8080 | TCP | iPXE binary and per-client boot script (8080); static discovery-OS artifacts — `scout.squashfs`, `scout.efi`, BFB (80) |
 | `unbound` | 53 | UDP+TCP | DNS for the `.forge` provisioning zone |
 | `nico-dhcp` | 67 | UDP | DHCP for AI Factory nodes |
 
@@ -102,8 +107,11 @@ services.
 > UEFI/BIOS, kernel panics) to log files and can forward them to Loki/Grafana
 > through an optional OpenTelemetry sidecar. It is not required for provisioning.
 
-All services share a single VIP. Create an `IPAddressPool` and
-`L2Advertisement` in the `metallb-system` namespace:
+All four services share a single VIP (via MetalLB's `allow-shared-ip`), which
+works because their ports do not overlap. Any service that reuses a port already
+on the VIP needs its own VIP. 
+
+Create an `IPAddressPool` and `L2Advertisement` in the `metallb-system` namespace:
 
 ```yaml
 apiVersion: metallb.io/v1beta1
@@ -112,6 +120,10 @@ metadata:
   name: nico-provisioning
   namespace: metallb-system
 spec:
+  # Only hand out this IP when a Service explicitly requests it (via annotation),
+  # so the cluster never auto-assigns the provisioning VIP to an unrelated 
+  # LoadBalancer Service.
+  autoAssign: false
   addresses:
     - <provisioning-network-vip>/32
 ---
@@ -142,12 +154,6 @@ $ oc apply -f metallb-provisioning.yaml
 > **DHCP relay:** Required when the provisioning VLAN is L3-separated from the
 > management cluster. See
 > [Network prerequisites](../00-network-prerequisites/).
-
-Or use the Makefile:
-
-```bash
-make deploy-dataplane-vip SITE=<name>
-```
 
 ## Next steps
 
