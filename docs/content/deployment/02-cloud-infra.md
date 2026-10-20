@@ -23,7 +23,8 @@ This runs:
 helm upgrade --install -n nico-rest nico-rest-infra \
   charts/cloud-infra/ \
   --create-namespace --wait --timeout 10m \
-  --post-renderer scripts/deploy/kustomize-post-renderer
+  --post-renderer kustomize-post-renderer \
+  --post-renderer-args scripts/kustomize/nico-rest
 ```
 
 The chart creates:
@@ -97,9 +98,10 @@ make bootstrap-org
 ```
 
 This fetches a Keycloak admin token, retrieves the `ncx-service` OIDC client
-secret, obtains a Bearer token for the NICo REST API, and calls the
-`/v2/org/ncx/nico/infrastructure-provider` endpoint to create the provider and
-tenant.
+secret, obtains a client-credentials Bearer token for the NICo REST API, and
+calls `/v2/org/ncx/nico/infrastructure-provider/current` and
+`/v2/org/ncx/nico/tenant/current`, which lazily create the Infrastructure
+Provider and the default Tenant if they do not already exist.
 
 > **If `bootstrap-org` fails with a token error**, check that `patch-keycloak-route`
 > completed successfully. A 503 from the Keycloak route is the most common cause.
