@@ -33,7 +33,7 @@ helm upgrade --install -n nico-rest nico-rest-infra \
   charts/cloud-infra/ \
   --create-namespace --wait --timeout 10m \
   --post-renderer kustomize-post-renderer \
-  --post-renderer-args scripts/kustomize/nico-rest
+  --post-renderer-args scripts/kustomize/infra-cloud
 ```
 
 The chart creates:
