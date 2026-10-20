@@ -156,6 +156,7 @@ jobs:
           push: true
           tags: |
             ${{ env.IMAGE_REGISTRY }}/${{ matrix.image.name }}:${{ env.VERSION }}
+            ${{ env.IMAGE_REGISTRY }}/${{ matrix.image.name }}:${{ github.ref_name }}
             ${{ env.IMAGE_REGISTRY }}/${{ matrix.image.name }}:latest
           build-args: ${{ matrix.image.build_args && format('VERSION={0}', env.VERSION) || '' }}
           cache-from: type=gha
@@ -170,6 +171,7 @@ jobs:
           push: true
           tags: |
             ${{ env.IMAGE_REGISTRY }}/${{ matrix.image.name }}:${{ env.VERSION }}
+            ${{ env.IMAGE_REGISTRY }}/${{ matrix.image.name }}:${{ github.ref_name }}
             ${{ env.IMAGE_REGISTRY }}/${{ matrix.image.name }}:latest
           build-args: ${{ matrix.image.build_args && format('VERSION={0}', env.VERSION) || '' }}
           secrets: |
@@ -210,6 +212,7 @@ jobs:
           push: true
           tags: |
             ${{ env.IMAGE_REGISTRY }}/infra-controller-admin-cli:${{ env.VERSION }}
+            ${{ env.IMAGE_REGISTRY }}/infra-controller-admin-cli:${{ github.ref_name }}
             ${{ env.IMAGE_REGISTRY }}/infra-controller-admin-cli:latest
           build-args: |
             INFRA_CONTROLLER_CORE_IMAGE=${{ env.IMAGE_REGISTRY }}/infra-controller-core:${{ env.VERSION }}
@@ -249,6 +252,7 @@ jobs:
           push: true
           tags: |
             ${{ env.IMAGE_REGISTRY }}/nv-rms:${{ env.VERSION }}
+            ${{ env.IMAGE_REGISTRY }}/nv-rms:${{ github.ref_name }}
             ${{ env.IMAGE_REGISTRY }}/nv-rms:latest
           secrets: |
             rhsm_org=${{ secrets.RHSM_ORG }}
