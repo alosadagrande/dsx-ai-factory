@@ -44,7 +44,28 @@ oc get pods -n nico-rest
 oc get pods -n rhbk-operator
 ```
 
-## Step 2 — Patch Keycloak route
+## Step 2 — Deploy the NICo REST plane
+
+The NICo REST plane is the operator-facing API layer (machine registration,
+instance management, site management). Deploy it before bootstrapping the
+organization — the bootstrap step calls this API:
+
+```bash
+make deploy-cloud
+```
+
+This installs the upstream `nico-rest` chart into the `nico-rest` namespace
+using `charts/values/nico-rest.yaml` as the image override file.
+
+Verify:
+
+```bash
+oc get pods -n nico-rest
+oc port-forward -n nico-rest svc/nico-rest-api 8388:8388 &
+curl -sk https://localhost:8388/api/v1/health
+```
+
+## Step 3 — Patch the Keycloak route
 
 The Keycloak Route is backed by the RHBK operator's self-signed certificate.
 OpenShift's router cannot verify it without the CA — the route returns HTTP 503
@@ -66,7 +87,7 @@ curl -sk https://keycloak-rhbk-operator.${CLUSTER_DOMAIN}/realms/nico \
 
 You should see `"realm": "nico"`.
 
-## Step 3 — Bootstrap the organization
+## Step 4 — Bootstrap the organization
 
 NICo requires an **Infrastructure Provider** and a default **Tenant** to be
 created before any machines can be onboarded. This is a one-time bootstrap:
@@ -82,26 +103,6 @@ tenant.
 
 > **If `bootstrap-org` fails with a token error**, check that `patch-keycloak-route`
 > completed successfully. A 503 from the Keycloak route is the most common cause.
-
-## Step 4 — Deploy NICo REST plane
-
-The NICo REST plane is the operator-facing API layer (machine registration,
-instance management, site management):
-
-```bash
-make deploy-cloud
-```
-
-This installs the upstream `nico-rest` chart into the `nico-rest` namespace
-using `charts/values/nico-rest.yaml` as the image override file.
-
-Verify:
-
-```bash
-oc get pods -n nico-rest
-oc port-forward -n nico-rest svc/nico-rest-api 8388:8388 &
-curl -sk https://localhost:8388/api/v1/health
-```
 
 Or run all four steps in sequence:
 
