@@ -154,7 +154,9 @@ jobs:
           context: ${{ matrix.image.context }}
           file: ${{ matrix.image.dockerfile }}
           push: true
-          tags: ${{ env.IMAGE_REGISTRY }}/${{ matrix.image.name }}:${{ env.VERSION }}
+          tags: |
+            ${{ env.IMAGE_REGISTRY }}/${{ matrix.image.name }}:${{ env.VERSION }}
+            ${{ env.IMAGE_REGISTRY }}/${{ matrix.image.name }}:latest
           build-args: ${{ matrix.image.build_args && format('VERSION={0}', env.VERSION) || '' }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
@@ -166,7 +168,9 @@ jobs:
           context: ${{ matrix.image.context }}
           file: ${{ matrix.image.dockerfile }}
           push: true
-          tags: ${{ env.IMAGE_REGISTRY }}/${{ matrix.image.name }}:${{ env.VERSION }}
+          tags: |
+            ${{ env.IMAGE_REGISTRY }}/${{ matrix.image.name }}:${{ env.VERSION }}
+            ${{ env.IMAGE_REGISTRY }}/${{ matrix.image.name }}:latest
           build-args: ${{ matrix.image.build_args && format('VERSION={0}', env.VERSION) || '' }}
           secrets: |
             rhsm_org=${{ secrets.RHSM_ORG }}
@@ -204,7 +208,9 @@ jobs:
         with:
           file: docker/infra-controller/Dockerfile.infra-controller-admin-cli
           push: true
-          tags: ${{ env.IMAGE_REGISTRY }}/infra-controller-admin-cli:${{ env.VERSION }}
+          tags: |
+            ${{ env.IMAGE_REGISTRY }}/infra-controller-admin-cli:${{ env.VERSION }}
+            ${{ env.IMAGE_REGISTRY }}/infra-controller-admin-cli:latest
           build-args: |
             INFRA_CONTROLLER_CORE_IMAGE=${{ env.IMAGE_REGISTRY }}/infra-controller-core:${{ env.VERSION }}
 
@@ -241,7 +247,9 @@ jobs:
           context: components/nv-rms/
           file: docker/rms/Dockerfile.rms
           push: true
-          tags: ${{ env.IMAGE_REGISTRY }}/nv-rms:${{ env.VERSION }}
+          tags: |
+            ${{ env.IMAGE_REGISTRY }}/nv-rms:${{ env.VERSION }}
+            ${{ env.IMAGE_REGISTRY }}/nv-rms:latest
           secrets: |
             rhsm_org=${{ secrets.RHSM_ORG }}
             rhsm_activationkey=${{ secrets.RHSM_ACTIVATIONKEY }}
