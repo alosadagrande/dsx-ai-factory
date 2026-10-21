@@ -15,6 +15,10 @@ metadata:
   labels:
     {{- include "nvidia-infra-controller-cloud-infra.labels" . | nindent 4 }}
   annotations:
+    # Create the database before Temporal's pre-install schema hook runs, so the
+    # Crunchy per-user secrets (e.g. nico-cloud-pg-pguser-temporal) already exist.
+    "helm.sh/hook": pre-install
+    "helm.sh/hook-weight": "-10"
 spec:
   postgresVersion: 18
   customTLSSecret:
@@ -84,6 +88,9 @@ metadata:
   labels:
     {{- include "nvidia-infra-controller-cloud-infra.labels" . | nindent 4 }}
   annotations:
+    # Must exist before the PostgresCluster pre-install hook runs its init SQL.
+    "helm.sh/hook": pre-install
+    "helm.sh/hook-weight": "-10"
 data:
   init.sql: |
     \c nico
