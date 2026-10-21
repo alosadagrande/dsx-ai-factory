@@ -13,8 +13,10 @@ global:
     # pullPolicy inherits upstream's IfNotPresent; override with
     # --set global.image.pullPolicy=Always for local tests that re-push :latest.
     # Releases pin an immutable tag (see repo tags).
-    # TODO: each nico-rest service overrides image.repository individually below
-    tag: latest
+    # Each service overrides image.name below to the published
+    # infra-controller-rest-* names (see .github/workflows/build.yml).
+    # Default tag latest
+    tag: v0.0.1
   certificate:
     issuerRef:
       kind: ClusterIssuer
@@ -48,6 +50,8 @@ nico-rest-common:
         - site-worker
 
 nico-rest-api:
+  image:
+    name: infra-controller-rest-api
   replicaCount: 1
   # Drop the chart's default pod securityContext (runAsUser/fsGroup 1000) so the
   # pod runs on restricted-v2 with a range UID. See nico-rest-cert-manager.
@@ -114,6 +118,8 @@ nico-rest-api:
       enabled: false
 
 nico-rest-workflow:
+  image:
+    name: infra-controller-rest-workflow
   # Drop the chart's default pod securityContext (runAsUser/fsGroup 1000) on both
   # worker deployments so they run on restricted-v2. See nico-rest-cert-manager.
   podSecurityContext: null
@@ -156,6 +162,8 @@ nico-rest-workflow:
       enabled: false
 
 nico-rest-site-manager:
+  image:
+    name: infra-controller-rest-site-manager
   replicaCount: 1
   # Drop the chart's default pod securityContext (runAsUser/fsGroup 1000),
   # which restricted-v2 rejects. Nulling it lets OpenShift inject a valid
@@ -177,6 +185,8 @@ nico-rest-site-manager:
     commonName: nico-rest-site-manager
 
 nico-rest-cert-manager:
+  image:
+    name: infra-controller-rest-cert-manager
   enabled: true
   # Drop the chart's default pod securityContext (runAsUser/fsGroup 65534),
   # which restricted-v2 rejects (UID must be in the namespace's allocated
@@ -190,6 +200,8 @@ nico-rest-cert-manager:
     caSigningSecret: ca-signing-secret
 
 nico-rest-db:
+  image:
+    name: infra-controller-rest-db
   # Drop the chart's default pod securityContext (runAsUser/fsGroup 1000) on the
   # migration job so it runs on restricted-v2. See nico-rest-cert-manager.
   podSecurityContext: null
