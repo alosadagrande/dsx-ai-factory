@@ -80,9 +80,10 @@ Verify the pods and the external API route:
 ```bash
 oc get pods -n nico-rest
 oc get route nico-rest-api -n nico-rest
-oc port-forward -n nico-rest svc/nico-rest-api 8388:8388 &
-curl -sk https://localhost:8388/api/v1/health
+URL_NICO_REST_API=$(oc get route nico-rest-api -o jsonpath='{.spec.host}')
+curl -ks https://${URL_NICO_REST_API}/healthz | jq '.is_healthy'
 ```
+You should see `true"`.
 
 The next two steps: patching the Keycloak route and bootstrapping the
 organization turn this empty API into one you can onboard hardware into.
