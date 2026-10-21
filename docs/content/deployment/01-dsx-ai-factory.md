@@ -21,6 +21,16 @@ The steps below walk through each phase in order.
 > NICo Core) with the MetalLB VIP pre-wired. See the `Makefile` for the required
 > `DATAPLANE_*` variables.
 
+## Before you begin
+
+Run the preflight check to verify the required tools, the kustomize
+post-renderer, your cluster login, and a default StorageClass before deploying:
+
+```bash
+make check-prereqs
+```
+Resolve anything it reports as `[MISSING]` before continuing.
+
 ## Step 1 — Install prerequisite operators
 
 The `prereqs` chart installs the OLM operators that all subsequent releases

@@ -40,6 +40,9 @@ temporal:
   server:
     enabled: true
     replicaCount: 1
+    # Clear the chart's default pod securityContext (fsGroup/runAsUser: 1000) so
+    # OpenShift's restricted-v2 SCC can inject a valid range UID.
+    securityContext: null
     image:
       pullPolicy: IfNotPresent
     metrics:
@@ -149,6 +152,9 @@ temporal:
     frontend:
       replicaCount: 1
       readinessProbe:
+        # Helm deep-merges values, so the chart's default grpc handler would
+        # remain alongside tcpSocket (k8s rejects >1 handler). null removes it.
+        grpc: null
         tcpSocket:
           port: 7233
         initialDelaySeconds: 10
