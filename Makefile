@@ -11,6 +11,9 @@
 #   make deploy-all-site SITE=<name>
 #   make deploy-site-agent SITE_NAME=<name>
 
+# Use bash so recipes can rely on process substitution (e.g. --set-file <(...)).
+SHELL := /bin/bash
+
 .PHONY: help check-prereqs
 .PHONY: deploy-prereqs deploy-cloud-infra deploy-cloud deploy-all-cloud
 .PHONY: patch-keycloak-route bootstrap-org
@@ -173,24 +176,21 @@ check-prereqs: ## Verify required tools and cluster connectivity
 		MISSING=1; \
 	fi; \
 	if command -v helm >/dev/null 2>&1; then \
-		HELM_MAJOR=$$(helm version --short 2>/dev/null | sed -n 's/^v\([0-9][0-9]*\)\..*/\1/p'); \
-		if [ "$$HELM_MAJOR" != "4" ]; then \
-			echo "  [MISSING] Helm 4.x required (found $${HELM_MAJOR:-unknown}.x)"; \
-			echo "            The kustomize post-renderer uses postrenderer/v1 (Helm 4 only)."; \
-			echo "            Helm 3 breaks all helm commands once the plugin is installed."; \
-			MISSING=1; \
-		else \
+		HELM_VER=$$(helm version --short 2>/dev/null | sed -n 's/^v\([0-9][0-9]*\.[0-9][0-9]*\).*/\1/p'); \
+		HELM_MAJOR=$${HELM_VER%%.*}; HELM_MINOR=$${HELM_VER#*.}; \
+		if [ "$${HELM_MAJOR:-0}" -eq 3 ] && [ "$${HELM_MINOR:-0}" -ge 12 ] 2>/dev/null; then \
 			echo "  [OK]      helm $$(helm version --short)"; \
-			if helm plugin list 2>/dev/null | grep -q '^kustomize-post-renderer[[:space:]]'; then \
-				echo "  [OK]      helm plugin: kustomize-post-renderer"; \
-			elif helm plugin install "$(POST_RENDERER_DIR)" >/dev/null 2>&1; then \
-				echo "  [OK]      helm plugin: kustomize-post-renderer (just installed)"; \
-			else \
-				echo "  [MISSING] helm plugin: kustomize-post-renderer"; \
-				echo "            install with: helm plugin install $(POST_RENDERER_DIR)"; \
-				MISSING=1; \
-			fi; \
+		else \
+			echo "  [MISSING] Helm 3.12+ required (found $${HELM_VER:-unknown})"; \
+			echo "            The kustomize post-renderer runs from PATH and needs --post-renderer-args (Helm 3.12+)."; \
+			MISSING=1; \
 		fi; \
+	fi; \
+	if [ -x "$(POST_RENDERER_DIR)/kustomize-post-renderer" ]; then \
+		echo "  [OK]      kustomize post-renderer present"; \
+	else \
+		echo "  [MISSING] kustomize post-renderer missing at $(POST_RENDERER_DIR)"; \
+		MISSING=1; \
 	fi; \
 	if oc whoami >/dev/null 2>&1; then \
 		echo "  [OK]      oc logged in to $$(oc whoami --show-server 2>/dev/null)"; \
@@ -244,18 +244,17 @@ deploy-cloud-infra: helm-dep-build ## Deploy cloud infrastructure (Temporal, Key
 	helm upgrade --install -n nico-rest nico-rest-infra \
 		$(CLOUD_INFRA_CHART)/ \
 		--create-namespace --wait --timeout 10m \
-		$(if $(KEYCLOAK_CLIENT_SECRET),--set nico-rest-common.secrets.keycloakClientSecret.value="$(KEYCLOAK_CLIENT_SECRET)") \
-		--post-renderer $(POST_RENDERER) --post-renderer-args $(CLOUD_KUSTOMIZE)
+		$(if $(KEYCLOAK_CLIENT_SECRET),--set nico-rest-common.secrets.keycloakClientSecret.value="$(KEYCLOAK_CLIENT_SECRET)")
 
 deploy-cloud: ## Deploy NICo REST API services
 	helm upgrade --install -n nico-rest nico-rest \
 		$(NICO_REST_CHART) --wait --timeout 10m \
 		-f $(NICO_REST_VALUES) \
+		--set-file nico-rest-api.caBundle=<(oc get secret nico-root-ca-secret -n cert-manager -o jsonpath='{.data.ca\.crt}' | base64 -d) \
 		--set nico-rest-api.config.keycloak.externalBaseURL=https://keycloak-rhbk-operator.$(CLUSTER_DOMAIN) \
 		--set nico-rest-common.secrets.keycloakClientSecret.value="$(KEYCLOAK_CLIENT_SECRET)" \
 		--set global.image.repository="$(IMAGE_REGISTRY)" \
-		--set global.image.tag="$(IMAGE_TAG)" \
-		--post-renderer $(POST_RENDERER) --post-renderer-args $(CLOUD_KUSTOMIZE)
+		--set global.image.tag="$(IMAGE_TAG)"
 
 deploy-all-cloud: deploy-prereqs deploy-cloud-infra deploy-cloud ## Deploy all cloud components, patch Keycloak route, and bootstrap org
 	$(MAKE) patch-keycloak-route
