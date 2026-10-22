@@ -432,11 +432,9 @@ deploy-site: ensure-ssh-host-key ## Deploy NICo Core (use SITE= to select per-si
 		$(NICO_CORE_CHART) --wait --timeout 10m \
 		-f $(NICO_CORE_VALUES) -f $(SITE_VALUES) \
 		--set global.image.repository="$(IMAGE_REGISTRY)/infra-controller-core" \
-		--set global.image.tag="$(IMAGE_TAG)" \
 		--set 'nico-api.certificate.extraDnsNames[0]=carbide-api.forge' \
 		--set 'nico-api.certificate.extraDnsNames[1]=nico-api-grpc-nico-system.$(CLUSTER_DOMAIN)' \
-		$(DATAPLANE_VIP_SET) \
-		--post-renderer $(POST_RENDERER) --post-renderer-args $(SITE_KUSTOMIZE)
+		$(DATAPLANE_VIP_SET)
 	@oc get route nico-api-grpc -n nico-system >/dev/null 2>&1 || \
 		oc create route passthrough nico-api-grpc --service=nico-api --port=grpc -n nico-system
 

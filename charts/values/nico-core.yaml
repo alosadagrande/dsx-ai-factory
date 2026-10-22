@@ -15,7 +15,8 @@ global:
     # IfNotPresent; override with --set global.image.pullPolicy=Always for local
     # tests that re-push :latest. Releases pin an immutable tag (see repo tags).
     repository: ghcr.io/rh-ecosystem-edge/dsx-ai-factory/infra-controller-core
-    tag: latest
+    # Default tag latest
+    tag: v0.0.1
     pullPolicy: IfNotPresent
   spiffe:
     trustDomain: nico.local
@@ -119,12 +120,13 @@ nico-bmc-proxy:
       secretName: vault-unseal-secret
     vaultClusterInfo:
       configMapName: vault-cluster-info
+    # Crunchy pguser secret exposes 'user' not 'username'; the fork reads the key
+    # name from envFrom.databaseCredentials.usernameKey (chart default 'username').
     databaseCredentials:
       secretName: nico-site-pg-pguser-nico
+      usernameKey: user
     databaseConfig:
       configMapName: nico-system-nico-database-config
-  database:
-    usernameKey: user
 nico-dhcp:
   enabled: true
   # nico-dhcp is the ONE Core service that cannot run on restricted-v2: kea must
@@ -275,11 +277,22 @@ unbound:
   # containerPort from this value so probes and Deployment ports match.
   containerPort: 5353
   # The Red Hat UBI image has no shell (/bin/sh) — it's a minimal image with
-  # only the unbound binary at /usr/sbin/unbound. The main config is injected
-  # via kustomize patch (fix-unbound-config.yaml) because the chart's
-  # configmap.yaml template only renders hardcoded keys from localConfig.
+  # only the unbound binary at /usr/sbin/unbound. Inject the main config via the
+  # chart's unbound.mainConfig value (fork fix/openshift-compatibility): the
+  # configmap renders it as unbound.cfg alongside the hardcoded localConfig keys.
   command: ["/usr/sbin/unbound"]
   args: ["-d", "-c", "/etc/unbound/local.conf.d/unbound.cfg"]
+  unbound:
+    mainConfig: |
+      server:
+        interface: 0.0.0.0@5353
+        interface: ::0@5353
+        access-control: 0.0.0.0/0 allow
+        access-control: ::0/0 allow
+        chroot: ""
+        pidfile: "/tmp/unbound.pid"
+        username: ""
+      include: "/etc/unbound/local.conf.d/*.conf"
   # externalService:
   #   enabled: true
   #   annotations:
@@ -306,14 +319,16 @@ nico-flow:
   images:
     flow:
       repository: ghcr.io/rh-ecosystem-edge/dsx-ai-factory/infra-controller-flow
-      tag: latest
+      tag: v0.0.1
   database:
     host: nico-site-pg-primary
     port: 5432
-    usernameKey: user
     certPath: ""
+    # Crunchy pguser secret exposes 'user'; the fork reads the key name from
+    # database.flow.usernameKey (note the .flow. level), chart default 'username'.
     flow:
       name: flow
+      usernameKey: user
       credentialsSecret: nico-site-pg-pguser-nico
   nicoCoreApi:
     url: nico-api:1079
