@@ -162,16 +162,6 @@ This writes three files to `~/.nico/`:
 - `admin-tls.key` is the private key (mode 600).
 - `admin-ca.crt` is the CA that verifies the `nico-api` server certificate.
 
-The wrapper reads its material from `~/.config/nico` under fixed names, so copy
-the issued files into place:
-
-```bash
-mkdir -p ~/.config/nico
-cp ~/.nico/admin-tls.crt ~/.config/nico/nico-admin-cli.crt
-cp ~/.nico/admin-tls.key ~/.config/nico/nico-admin-cli.key
-cp ~/.nico/admin-ca.crt  ~/.config/nico/nico-root-ca.crt
-```
-
 ### Run the CLI
 
 Point `API_URL` at the `nico-api` gRPC endpoint and run any subcommand through
@@ -189,8 +179,7 @@ The `API_URL` host must match a SAN on the `nico-api` serving certificate, which
 is why the Route host (added as a SAN by `deploy-site`) is used here.
 
 > **Re-run `make vault-admin-cert` every 24 hours** or when the certificate
-> expires, then recopy the files. An expired certificate shows up as a TLS error
-> from the CLI.
+> expires. An expired certificate shows up as a TLS error from the CLI.
 
 ## Verify
 
